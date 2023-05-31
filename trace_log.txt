@@ -1,0 +1,81 @@
+1711510 us, layer2 spks: 39, for time step: 11
+1775850 us, layer1->layer2 spks: 315, for time step: 12
+1775870 us, layer0->layer1 spks: 356, for time step: 13
+1775880 us, input->layer0 spks: 121, for time step: 14
+1845190 us, layer2 spks: 35, for time step: 12
+1911190 us, layer1->layer2 spks: 314, for time step: 13
+1911220 us, layer0->layer1 spks: 353, for time step: 14
+1980310 us, layer2 spks: 34, for time step: 13
+2045410 us, layer1->layer2 spks: 315, for time step: 14
+
+1024x1024x300
+
+resource config: 1x1x1, time spent: 345630 us
+resource config: 3x1x1, time spent: 354590 us
+resource config: 1x3x1, time spent: 770830 us
+resource config: 1x3x3, time spent: 796030 us
+resource config: 3x3x3, time spent: 804990 us
+resource config: 1x1x3, time spent: 688340 us
+resource config: 5x1x1, time spent: 421030 us
+resource config: 5x3x1, time spent: 788750 us
+resource config: 5x3x5, time spent: 1111140 us
+resource config: 5x5x5, time spent: 1264350 us
+resource config: 5x5x9, time spent: 1890780 us
+resource config: 5x9x5, time spent: 2114750 us
+
+resource config: 1x1x1, time spent: 345630 us
+resource config: 2x1x1, time spent: 350110 us
+resource config: 1x2x1, time spent: 558230 us
+resource config: 1x2x2, time spent: 570830 us
+resource config: 2x2x2, time spent: 575310 us
+resource config: 1x1x2, time spent: 499980 us
+resource config: 4x1x1, time spent: 363590 us
+resource config: 4x2x1, time spent: 571670 us
+resource config: 4x2x4, time spent: 904220 us
+resource config: 4x4x4, time spent: 1034670 us
+resource config: 4x4x8, time spent: 1685820 us
+resource config: 4x8x4, time spent: 1885070 us
+
+
+500x500x300
+0 s, input->layer0 spks: 93, for time step: 0
+16780 us, layer0->layer1 spks: 58, for time step: 0
+16790 us, input->layer0 spks: 95, for time step: 1
+36550 us, layer1->layer2 spks: 75, for time step: 0
+36570 us, layer0->layer1 spks: 74, for time step: 1
+36580 us, input->layer0 spks: 112, for time step: 2
+86090 us, layer2 spks: 28, for time step: 0
+86130 us, layer1->layer2 spks: 95, for time step: 1
+86150 us, layer0->layer1 spks: 81, for time step: 2
+86160 us, input->layer0 spks: 97, for time step: 3
+148870 us, layer2 spks: 37, for time step: 1
+148910 us, layer1->layer2 spks: 89, for time step: 2
+148930 us, layer0->layer1 spks: 81, for time step: 3
+148940 us, input->layer0 spks: 96, for time step: 4
+207690 us, layer2 spks: 43, for time step: 2
+
+
+resource config: 4x4x8, time spent: 523120 us
+resource config: 4x4x16, time spent: 988720 us
+resource config: 4x8x8, time spent: 533080 us
+resource config: 2x8x8, time spent: 525640 us
+resource config: 2x8x16, time spent: 991880 us
+resource config: 4x8x16, time spent: 999320 us
+resource config: 4x8x16, time spent: 999320 us
+
+resource config: 8x2x1, time spent: 951110 us
+resource config: 8x2x4, time spent: 968270 us
+resource config: 8x4x2, time spent: 966890 us
+resource config: 16x8x4, time spent: 1870990 us
+resource config: 32x16x8, time spent: 3686830 us
+
+resource config: 32x8x4, time spent: 3614990 us
+resource config: 32x8x4, time spent: 3614990 us
+resource config: 32x4x4, time spent: 3592650 us
+resource config: 64x32x8, time spent: 791670 us
+resource config: 32x32x8, time spent: 3888970 us
+resource config: 32x32x16, time spent: 3929370 us
+resource config: 1x1x1, time spent: 182870 us
+resource config: 1x1x1, time spent: 318510 us
+resource config: 2x1x1, time spent: 326590 us
+resource config: 1x1x1, time spent: 318510 us

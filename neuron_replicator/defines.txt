@@ -1,0 +1,29 @@
+#define SPIKE_IN_RAW_FILE "torch_raw/spk_in_raw.txt"
+#define FC1_RAW_FILE "torch_raw/fc1_raw.txt"
+#define FC2_RAW_FILE "torch_raw/fc2_raw.txt"
+#define FC3_RAW_FILE "torch_raw/fc3_raw.txt"
+
+#define SPIKE_IN_FILE "input/spk_in.txt"
+#define FC1_BIAS_FILE "input/fc1_bias.txt"
+#define FC2_BIAS_FILE "input/fc2_bias.txt"
+#define FC3_BIAS_FILE "input/fc3_bias.txt"
+
+#define TIME_STEP
+#define INPUT_LAYER_SIZE 784
+#define LAYER0_SIZE_LOGICAL 1024
+#define LAYER1_SIZE_LOGICAL 1024
+#define LAYER2_SIZE_LOGICAL  300
+
+#define L0_MEM_UNIT_SIZE
+#define L1_MEM_UNIT_SIZE
+#define L2_MEM_UNIT_SIZE
+
+#define L0_TOTAL_AVAIL_MEM static_cast<size_t>(std::ceil(1.0*LAYER0_SIZE_LOGICAL/L0_MEM_UNIT_SIZE))
+#define L1_TOTAL_AVAIL_MEM static_cast<size_t>(std::ceil(1.0*LAYER1_SIZE_LOGICAL/L1_MEM_UNIT_SIZE))
+#define L2_TOTAL_AVAIL_MEM static_cast<size_t>(std::ceil(1.0*LAYER2_SIZE_LOGICAL/L2_MEM_UNIT_SIZE))
+
+#define BETA 0.9
+#define POSITIVE_THRESHOLD 1.00
+#define PRINT_NEURON 0
+#define PRINT_LAYER0 0
+#define PRINT_LAYER1 0

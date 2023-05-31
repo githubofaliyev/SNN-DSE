@@ -1,0 +1,8 @@
+#include "event_control.h"
+#include "mem.h"
+#include "top_level.h"
+#include <systemc.h>
+
+top_level::top_level(sc_module_name name)
+: sc_module(name)
+, ec_inst("ec_inst")
