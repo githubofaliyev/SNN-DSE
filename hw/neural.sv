@@ -1,154 +1,151 @@
-/* - Handicap: accum_val/pot_val can't be adjusted for neural size. 
-	 in SystemC, this is easily done by decling those vars as arry in global_vars
-     so we'll remain as single var for all unit neurons, will impact area, maybe check when have 3 instance for each of those vars, how single unit FF/LUT changes
-   - the only issue is when mapping 4-1 non-increasing FF number for Acuum and Pot values
-   - but let's compensate this with the fact that ivado will do tons of optimization to decrease area
-   - so our hand calculated number even could be more than full synthesis one with the neglected FFs
-*/
+module neural #(parameter UNIT_IDX=5, EC_SIZE=32)
+  (input logic clk,
+   input logic rst,
+   input logic [4:0] shift_phase,
+   input logic activ_en, layer_activ,
+   output logic post_synpt_spk
+   );
 
-// connect spk address generated in event control into here, add from unit idx into somewhat addressing into that spk array
-// some waiting protocol needed to be done for single shifting vs accum for all unit neurons 
-// 	appropriate number of cycles to be waited for event control so that neural unit is done depends on unit size 
-// 	for neural, wait cycle is fixed since time for a single shift is always fixed so add this protocol shit insteaf od neural anding op
-// add activation part also 
-// accum and pot variables also need to be adjusted to unit size, e.g., an array of 5 for size=5
-// how to fetch bias?
-// how to use layer_neuron_idx for pot_val access?
-// Block RAM unit creation 
-
-/* - Handicap: accum_val/pot_val can't be adjusted for neural size. 
-	 in SystemC, this is easily done by decling those vars as arry in global_vars
-     so we'll remain as single var for all unit neurons, will impact area, maybe check when 	 have 3 instance for each of those vars, how single unit FF/LUT changes
-   - 
-*/
-
-// connect spk address generated in event control into here, add from unit idx into somewhat addressing into that spk array
-// some waiting protocol needed to be done for single shifting vs accum for all unit neurons 
-// 	appropriate number of cycles to be waited for event control so that neural unit is done depends on unit size 
-// 	for neural, wait cycle is fixed since time for a single shift is always fixed so add this protocol shit insteaf od neural anding op
-// how to fetch bias?
-// how to use layer_neuron_idx for pot_val access?
-
-module neural #(parameter UNIT_IDX=0, EC_SIZE=2)
-  (input logic clk, 
-   input logic rst, 
-   input logic layer_acc, layer_act,
-   input logic [4:0] base_spk_addr,
-   input logic [31:0] wdata, 
-   output logic [9:0] addr);
-  
   parameter NEURON_UNIT_SIZE = 2;
   parameter LAYER_SIZE = 10;
   parameter BETA = 2;
   parameter POSITIVE_THRESHOLD = 1;
   parameter bias = 3;
-  
-  logic [2:0] neuron_st, neuron_st_nxt;
-  logic [9:0] addr_nxt;
+
+  logic [2:0] fsm_state, fsm_state_nxt;
   logic signed [31:0] accum_val, accum_val_nxt;
   logic signed [31:0] pot_val, pot_val_nxt;
+  logic post_synpt_spk_nxt;
   
+  logic [31:0] wdata, wdata1;
+  logic bram_en, bram_en_nxt;
+  logic [9:0] addr;
+  logic [9:0] addr_nxt;
+
   logic [9:0] unit_neuron_idx, unit_neuron_idx_nxt;
   int layer_neuron_idx;
-        
+  
+  (* dont_touch = "true" *) my_bram B0(clk, addr, wdata1, bram_en, wdata);
+
   always_ff @(posedge clk) begin
-	neuron_st <= neuron_st_nxt;
+    fsm_state <= fsm_state_nxt;
     addr <= addr_nxt;
+    bram_en <= bram_en_nxt;
     accum_val <= accum_val_nxt;
     unit_neuron_idx <= unit_neuron_idx_nxt;
+    post_synpt_spk <= post_synpt_spk_nxt;
+    pot_val <= pot_val_nxt;
   end
-  
+
   always_comb begin : event_control
     if(rst) begin
-      neuron_st_nxt = 0;    
+      fsm_state_nxt = 0;
       addr_nxt = 0;
+      bram_en_nxt = 0;
       accum_val_nxt = 0;
       unit_neuron_idx_nxt = 0;
       pot_val_nxt = 0;
+      post_synpt_spk_nxt = 0;
     end else begin
-      neuron_st_nxt = neuron_st;
+      fsm_state_nxt = fsm_state;
       addr_nxt = addr;
+      bram_en_nxt = 0;
       accum_val_nxt = accum_val;
       unit_neuron_idx_nxt = 0;
       pot_val_nxt = pot_val;
-      
-      case (neuron_st)
+      post_synpt_spk_nxt = post_synpt_spk;
+
+      case (fsm_state)
         0: begin
-          if(layer_acc) neuron_st_nxt = 1;
-          else if(layer_act) neuron_st_nxt = 3;
+          if(activ_en) fsm_state_nxt = 1;
+          else if(layer_activ) fsm_state_nxt = 3;
         end
-        1: begin // ACCUM: addr
+        1: begin
           // 
           if(unit_neuron_idx < NEURON_UNIT_SIZE) begin // serially go through each neuron within the neural unit
-          	// check if this mult here translates to area growth, e.g., in FPGA or is it handled in synthesis time by generating the datapath
-            // consider 5 units in layer and 1:4 case, UNIT_IDX 2, iter 1. so neuron idx is 2*4+1=9, 
             // now to addr into pre-synapt neuron, we need that shift array
-            // case 1: EC_SIZE = 4, UNIT_IDX = 2, 
-            layer_neuron_idx =  UNIT_IDX*EC_SIZE + unit_neuron_idx; // layer neuron id
-          	addr_nxt = 
+            layer_neuron_idx =  UNIT_IDX + unit_neuron_idx; // layer neuron id
             unit_neuron_idx_nxt = unit_neuron_idx + 1;
-          	neuron_st_nxt = 2;
+            addr_nxt = shift_phase + layer_neuron_idx; // this actually needs to address into shift reg array to fetch the actual neuron addr of the pre-synapt layer
+            bram_en_nxt = 1;
+            fsm_state_nxt = 2;
           end else // done iterating unit neurons, now get the new shifted spk set for this unit
-            neuron_st_nxt = 0;
+            fsm_state_nxt = 0;
         // reading shifted spk addr will be handled in top-level connection phase
         // for now we assume that an input signal gives us that
         end
         2: begin
           accum_val_nxt = accum_val + wdata; // accumulate with the corresponding weight data
-          neuron_st_nxt = 1;
+          fsm_state_nxt = 1;
         end
         3: begin
           if(unit_neuron_idx < NEURON_UNIT_SIZE) begin // serially go through each neuron within the neural unit
-          	layer_neuron_idx = base_spk_addr + UNIT_IDX*EC_SIZE + unit_neuron_idx; // layer neuron id
-          	pot_val_nxt = pot_val*BETA + accum_val + bias;
-            unit_neuron_idx_nxt = unit_neuron_idx + 1;
-          	neuron_st_nxt = 4;
+                layer_neuron_idx = UNIT_IDX*NEURON_UNIT_SIZE + unit_neuron_idx; // layer neuron id
+                pot_val_nxt = pot_val + accum_val + bias;
+                unit_neuron_idx_nxt = unit_neuron_idx + 1;
+                fsm_state_nxt = 4;
           end else // done iterating unit neurons, done activation
-            neuron_st_nxt = 0;
+            fsm_state_nxt = 0;
         end
         4: begin
           if(pot_val > POSITIVE_THRESHOLD) begin
-            // layer_out = 1;
+            post_synpt_spk_nxt = 1;
             pot_val_nxt = pot_val - POSITIVE_THRESHOLD;
           end
-          neuron_st_nxt = 1;
+          fsm_state_nxt = 1;
         end
       endcase
     end // rst
-        
+
   end // always
-  
+
 endmodule
 
-module tb;
-  
-  reg rst;
-  reg clk;
-  reg layer_acc, layer_act;
-  reg [9:0] addr;
-  reg [31:0] data_in;
-  reg [4:0] base_spk_addr;
-  
-  neural n(clk, rst, layer_acc, layer_act, base_spk_addr, data_in, addr);
-    
-  initial begin   
-    clk = 0;
-    forever #5 clk = ~clk;
+
+module my_bram(
+  input  logic         clk,
+  input  logic [9:0]   addr,
+  input logic signed [31:0]  data_in,
+  input  logic         wr_en,
+  output logic signed [31:0]  data_out
+);
+
+  // Create a 10-bit wide by 32-bit deep BRAM
+  logic signed [31:0] mem [1023:0];
+
+  // Instantiate Block RAM primitive
+  reg [31:0] bram_out;
+  reg [9:0] bram_addr;
+  reg signed [31:0] bram_data;
+  wire [31:0] bram_we;
+
+  (* ram_style = "block" *)
+  (* synthesis_primitive = "MEMORY_PRIMITIVE" *)
+  (* implementation = "memory" *)
+  (* mem_gen_type = "block" *)
+  (* mem_style = "block_ram" *)
+  reg [31:0] my_bram [0:1023];
+
+  // Assign signals to BRAM primitive inputs
+  assign bram_we = wr_en;
+  assign bram_addr = addr;
+  assign bram_data = data_in;
+
+  // Read or write data to the BRAM based on address and control signals
+  always_ff @(posedge clk) begin
+    if (wr_en) begin
+      my_bram[addr] <= data_in;
+    end else begin
+      data_out <= my_bram[addr];
+    end
   end
-  
-  initial begin
-    rst = 1;
-    
-    #15;
-    
-    rst = 0;
-    
-    layer_acc = 1;
-    data_in = 12;    
-    
-    #10;
-    
-    #10;
-  end
-  
+
 endmodule
+
+/*
+module BlockRAM(input logic clk, rst, en,
+                (* dont_touch = "true" *) input logic [9:0] addr,
+                (* dont_touch = "true" *)output logic [31:0] wdata
+                );
+        
+        (* ram_style = "block" *) reg [31
