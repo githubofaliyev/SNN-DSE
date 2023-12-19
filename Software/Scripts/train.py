@@ -1,4 +1,5 @@
 import argparse
+import os
 import torch, torch.nn as nn
 import snntorch as snn
 from snntorch import surrogate
@@ -6,31 +7,28 @@ from snntorch import spikegen
 import snntorch.functional as SF
 from snntorch import backprop
 from snntorch import utils
-import os
+from torch.utils.data import DataLoader
+from torchvision import datasets, transforms
+from torch.utils.data import ConcatDataset
 
 batch_size = 32
 data_path='/Users/ilkinaliyev/Desktop/snntorch_main/workspace/datasets'
 device = torch.device("mps" if torch.backends.mps.is_available() else "cpu") # Change this to cuda if GPU, mps set for Apple slicon
 #print(device)
 
-from torch.utils.data import DataLoader
-from torchvision import datasets, transforms
-from torch.utils.data import ConcatDataset
-
 training_transform_not_augmented = transforms.Compose([
         transforms.ToTensor(),
         transforms.Normalize((0.4376821, 0.4437697, 0.47280442), (0.19803012, 0.20101562, 0.19703614)) # mean and std for SVHN to improve test acc.
     ])
 
-# Define a test transform
-transform = transforms.Compose([
+test_transform = transforms.Compose([
             transforms.Resize((32, 32)),
             #transforms.Grayscale(),
             transforms.ToTensor(),
             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
 ds_train = datasets.SVHN(data_path, split='train', download=True, transform=training_transform_not_augmented)
-ds_test = datasets.SVHN(data_path, split='test', download=True, transform=training_transform_not_augmented)
+ds_test = datasets.SVHN(data_path, split='test', download=True, transform=test_transform)
 
 
 # Create DataLoaders
