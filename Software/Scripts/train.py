@@ -3,13 +3,15 @@ import torch, torch.nn as nn
 import snntorch as snn
 from snntorch import surrogate
 from snntorch import spikegen
+import snntorch.functional as SF
+from snntorch import backprop
+from snntorch import utils
 import os
 
 batch_size = 32
 data_path='/Users/ilkinaliyev/Desktop/snntorch_main/workspace/datasets'
-#device = torch.device("cpu")
-device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
-print(device)
+device = torch.device("mps" if torch.backends.mps.is_available() else "cpu") # Change this to cuda if GPU, mps set for Apple slicon
+#print(device)
 
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
@@ -17,30 +19,26 @@ from torch.utils.data import ConcatDataset
 
 training_transform_not_augmented = transforms.Compose([
         transforms.ToTensor(),
-        transforms.Normalize((0.4376821, 0.4437697, 0.47280442), (0.19803012, 0.20101562, 0.19703614))
+        transforms.Normalize((0.4376821, 0.4437697, 0.47280442), (0.19803012, 0.20101562, 0.19703614)) # mean and std for SVHN to improve test acc.
     ])
 
-# Define a transform
+# Define a test transform
 transform = transforms.Compose([
             transforms.Resize((32, 32)),
             #transforms.Grayscale(),
             transforms.ToTensor(),
-            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
-            #transforms.Normalize((0,), (1,))]
-                               )
+            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
-#fmnist_train = datasets.CIFAR10(data_path, train=True, download=True, transform=transform)
-#fmnist_test = datasets.CIFAR10(data_path, train=False, download=True, transform=transform)
-fmnist_train = datasets.SVHN(data_path, split='train', download=True, transform=training_transform_not_augmented)
-fmnist_test = datasets.SVHN(data_path, split='test', download=True, transform=training_transform_not_augmented)
+ds_train = datasets.SVHN(data_path, split='train', download=True, transform=training_transform_not_augmented)
+ds_test = datasets.SVHN(data_path, split='test', download=True, transform=training_transform_not_augmented)
 
 
 # Create DataLoaders
-train_loader = DataLoader(fmnist_train, batch_size=batch_size, shuffle=True)
-test_loader = DataLoader(fmnist_test, batch_size=batch_size, shuffle=True)
+train_loader = DataLoader(ds_train, batch_size=batch_size, shuffle=True)
+test_loader = DataLoader(ds_test, batch_size=batch_size, shuffle=True)
 
 parser = argparse.ArgumentParser(description='SNN Training Script')
-parser.add_argument('--slp', type=float, default=0.25, help='neuron decay rate')
+parser.add_argument('--slp', type=float, default=0.25, help='Surrogate Slope')
 args = parser.parse_args()
 
 slp = args.slp 
@@ -49,7 +47,7 @@ num_steps = 18
 beta = 0.25  # neuron decay rate
 #grad = surrogate.atan(alpha=slp)
 grad = surrogate.fast_sigmoid(slope=slp)
-pop_outputs = 450
+pop_outputs = 450 # for population coding in output layer
 
 #  Initialize Network
 net = nn.Sequential(nn.Conv2d(3, 32, 3),
@@ -65,18 +63,9 @@ net = nn.Sequential(nn.Conv2d(3, 32, 3),
                     snn.Leaky(beta=beta, threshold=1.0, spike_grad=grad, init_hidden=True, output=True)
                     ).to(device)
 
-
-# net pop
-import snntorch.functional as SF
-from snntorch import backprop
-
-loss_fn = SF.mse_count_loss(correct_rate=1.0, incorrect_rate=0.0, population_code=True, num_classes=10)
-#loss_fn = SF.mse_temporal_loss()
-#loss_fn = SF.ce_temporal_loss()
+loss_fn = SF.mse_count_loss(correct_rate=1.0, incorrect_rate=0.0, population_code=True, num_classes=10) # works best in rate coding
 optimizer = torch.optim.Adam(net.parameters(), lr=2e-3, betas=(0.9, 0.999))
-scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=4690, eta_min=0, last_epoch=-1)
-
-from snntorch import utils
+scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=4690, eta_min=0, last_epoch=-1) # for faster convergence to optimal accuracy
 
 def test_accuracy(data_loader, net, num_steps, population_code=False, num_classes=False):
   with torch.no_grad():
