@@ -16,19 +16,13 @@ data_path='/Users/ilkinaliyev/Desktop/snntorch_main/workspace/datasets'
 device = torch.device("mps" if torch.backends.mps.is_available() else "cpu") # Change this to cuda if GPU, mps set for Apple slicon
 #print(device)
 
-training_transform_not_augmented = transforms.Compose([
+transform_not_augmented = transforms.Compose([
         transforms.ToTensor(),
         transforms.Normalize((0.4376821, 0.4437697, 0.47280442), (0.19803012, 0.20101562, 0.19703614)) # mean and std for SVHN to improve test acc.
     ])
 
-test_transform = transforms.Compose([
-            transforms.Resize((32, 32)),
-            #transforms.Grayscale(),
-            transforms.ToTensor(),
-            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
-
-ds_train = datasets.SVHN(data_path, split='train', download=True, transform=training_transform_not_augmented)
-ds_test = datasets.SVHN(data_path, split='test', download=True, transform=test_transform)
+ds_train = datasets.SVHN(data_path, split='train', download=True, transform=transform_not_augmented)
+ds_test = datasets.SVHN(data_path, split='test', download=True, transform=transform_not_augmented)
 
 
 # Create DataLoaders
