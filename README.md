@@ -28,4 +28,4 @@ To run the SystemC software, follow these steps:
 Alternatively, you can run each step manually using the commands in `custom_run.sh`.
 
 ## License
-This code is released under the MIT license. See LICENSE.txt for more details.
+MIT
