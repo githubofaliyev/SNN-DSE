@@ -1,3 +1,5 @@
+`timescale 1ns / 1ps
+
 module bram_pot #(
     parameter RAM_DEPTH = 32, 
     parameter RAM_ADDR_WIDTH = $clog2(RAM_DEPTH), 
@@ -24,11 +26,8 @@ module bram_pot #(
   (* mem_gen_type = "block" *)
   (* mem_style = "block_ram" *)
 
-  `ifdef SIM
-  shortreal data_ram [0:RAM_DEPTH-1];
-  `else
-  logic [31:0] data_ram [0:RAM_DEPTH-1];
-  `endif
+   shortreal data_ram [0:RAM_DEPTH-1];
+
 
   // Write Operation
   always_ff @(posedge clk) begin

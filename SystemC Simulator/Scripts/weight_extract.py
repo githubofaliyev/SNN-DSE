@@ -119,7 +119,7 @@ def save_weights_and_biases(conv_layer, dir_name, l, n):
 
 ######################## model dir ########################
 l1 = 32
-l2 = 32
+l2 = 16
 l3 = 8
 l4 = 8
 dir_name = 'hw_run/fs/a{}_{}_{}_{}_{}'.format(slp, l1, l2, l3, l4)

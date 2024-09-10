@@ -38,7 +38,7 @@ slp = args.slp
 num_steps = 18
 beta = 0.25  # neuron decay rate
 #grad = surrogate.atan(alpha=slp)
-grad = surrogate.fast_sigmoid(slope=slp)
+grad = surrogate.fast_sigmoid(slope=slp) #[1.0, 48.0] 
 pop_outputs = 450 # for population coding in output layer
 
 #  Initialize Network

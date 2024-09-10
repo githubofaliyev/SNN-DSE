@@ -6,11 +6,7 @@ module bram_wght #(
     input logic clk,
     input logic rst,
     input logic [RAM_ADDR_WIDTH-1:0] raddr,
-    `ifdef SIM
     output shortreal rdat,
-    `else
-    output logic [31:0] rdat,
-    `endif
     input logic ren
 );
 
@@ -20,11 +16,8 @@ module bram_wght #(
   (* mem_gen_type = "block" *)
   (* mem_style = "block_ram" *)
 
-  `ifdef SIM
   shortreal data_ram [0:RAM_DEPTH-1];
-  `else
-  logic [31:0] data_ram [0:RAM_DEPTH-1];
-  `endif
+
 
   integer file;
     shortreal temp;

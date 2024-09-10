@@ -8,6 +8,11 @@ module conv_nc #(
     parameter INPUT_FRAME_SIZE = INPUT_FRAME_WIDTH * INPUT_FRAME_WIDTH,
     parameter OUTPUT_FRAME_WIDTH = 26,
     parameter BRAM_ADDR_WIDTH = 10,
+    parameter w_sfactor = 0.24,
+    parameter b_sfactor = 0.54,
+    parameter w_zpt = 0.24,
+    parameter b_zpt = 0.54,
+    parameter NEURON_TYPE = 0, // 0 for LIF, 1 for Lapicque
     parameter string WEIGHT_FILENAME = "/sim_1/new/weight_file_0_3.txt"
   )(
   input logic clk, rst,
@@ -17,45 +22,42 @@ module conv_nc #(
   input logic [$clog2(IN_CHANNELS)+1:0] ic,
   input logic [$clog2(KERNEL_SIZE)+1:0] filter_phase,
   input logic [$clog2(OUT_CHANNELS)+1:0] oc_phase,
-  input logic [$clog2(INPUT_FRAME_WIDTH)-1:0] affect_neur_addr_y,
-  input logic [$clog2(INPUT_FRAME_WIDTH)-1:0] affect_neur_addr_x,
+  input logic [$clog2(INPUT_FRAME_WIDTH)-1:0] affect_neur_addr_row,
+  input logic [$clog2(INPUT_FRAME_WIDTH)-1:0] affect_neur_addr_col,
   input logic neur_addr_invalid,
 
   output logic [OUTPUT_FRAME_WIDTH*OUTPUT_FRAME_WIDTH-1:0] post_syn_spk,
-  `ifdef SIM
   input shortreal bram_rdat,
   output shortreal bram_wrdat,
-  `else
-  input logic [31:0] bram_rdat,
-  output logic [31:0] bram_wrdat,
-  `endif
-  output logic [BRAM_ADDR_WIDTH+1:0] bram_raddr,
+  output logic [BRAM_ADDR_WIDTH-1:0] bram_raddr, // ?
   output logic bram_ren,
-  output logic [BRAM_ADDR_WIDTH+1:0] bram_wraddr,
+  output logic [BRAM_ADDR_WIDTH-1:0] bram_wraddr, // ?
   output logic bram_wren
   );
   
-  `ifdef SIM
-      shortreal BETA = 0.25;
-      shortreal signed_POSITIVE_THRESHOLD = 1.0;
-      shortreal membr_pot, membr_pot_nxt;
-  `else
-      logic [31:0] signed_POSITIVE_THRESHOLD = 32'h3F800000; // 1.0 in IEEE 754 floating-point
-      logic [31:0] membr_pot, membr_pot_nxt;
-      logic [31:0] BETA = 32'h3F800000;
-  `endif
+  int spk_ctr = 0;
+  
+  shortreal BETA = (NEURON_TYPE == 0) ? 1.0 : 0.24; // Old Value: 0.15, New Value: 0.24
+  shortreal signed_POSITIVE_THRESHOLD = 0.23; // Old Value: 0.5, New Value: 0.23
+  shortreal membr_pot, membr_pot_nxt;
 
   logic [3:0] fsm_state, fsm_state_nxt;
   logic [OUTPUT_FRAME_WIDTH*OUTPUT_FRAME_WIDTH-1:0] post_syn_spk_nxt;
   logic accum_membr_calc_stage, accum_membr_calc_stage_nxt;
   logic activ_membr_calc_stage, activ_membr_calc_stage_nxt;
   logic [BRAM_ADDR_WIDTH-1:0] intermed_addr, intermed_addr_nxt;
+  
+  logic [31:0] weight_addr;
+  shortreal weight_data;
+  int bias_addr;
+  shortreal bias_data;
 
   `ifdef SIM
-  shortreal weight_n_bias[((OUT_CHANNELS + EC_SIZE - 1)/EC_SIZE)*(IN_CHANNELS*KERNEL_SIZE*KERNEL_SIZE  + 1) - 1:0]; // weight_n_bias and bias
+  shortreal weight_n_bias[(OUT_CHANNELS/EC_SIZE)*(IN_CHANNELS*KERNEL_SIZE*KERNEL_SIZE  + 1) - 1:0]; // weight_n_bias and bias
   `else
-  logic [31:0] weight_n_bias[((OUT_CHANNELS + EC_SIZE - 1)/EC_SIZE)*(IN_CHANNELS*KERNEL_SIZE*KERNEL_SIZE + 1) - 1:0]; // weight_n_bias and bias
+  logic [31:0] weight_n_bias[(OUT_CHANNELS/EC_SIZE)*(IN_CHANNELS*KERNEL_SIZE*KERNEL_SIZE + 1) - 1:0]; // weight_n_bias and bias
   `endif
+  shortreal intermed_pot;
 
   integer file;
   initial begin
@@ -64,7 +66,7 @@ module conv_nc #(
       $display("Error: Opening file failed!");
     end else begin
        $display("Success: Opening file!");
-      for (int i = 0; i < 4*(IN_CHANNELS * KERNEL_SIZE * KERNEL_SIZE + 1); i++) begin
+      for (int i = 0; i < (OUT_CHANNELS/EC_SIZE)*(IN_CHANNELS * KERNEL_SIZE * KERNEL_SIZE + 1); i++) begin
         $fscanf(file, "%f", weight_n_bias[i]);
       end
       $fclose(file);
@@ -105,6 +107,8 @@ module conv_nc #(
       intermed_addr_nxt = intermed_addr;
       case (fsm_state)
         0: begin
+          accum_membr_calc_stage_nxt = 0;
+          activ_membr_calc_stage_nxt = 0;
           if(en_accum) fsm_state_nxt = 1;   
           else if(en_activ) begin
             fsm_state_nxt = 3;
@@ -122,17 +126,23 @@ module conv_nc #(
                 accum_membr_calc_stage_nxt = 0;
             end else if (neur_addr_invalid) begin 
                 accum_membr_calc_stage_nxt = 0;
-            end else begin // if addr valid then do accum add and bram wr
-                bram_raddr = affect_neur_addr_y*INPUT_FRAME_WIDTH + affect_neur_addr_x;
+            end else if(en_accum) begin // if addr valid then do accum add and bram wr
+                bram_raddr = affect_neur_addr_row*INPUT_FRAME_WIDTH + affect_neur_addr_col;
                 intermed_addr_nxt = bram_raddr;
                 bram_ren = 1;
                 accum_membr_calc_stage_nxt = 1;
             end
            
            if(accum_membr_calc_stage) begin
-            bram_wrdat = bram_rdat + weight_n_bias[(oc_phase * IN_CHANNELS * KERNEL_SIZE * KERNEL_SIZE + 1) + ic * KERNEL_SIZE * KERNEL_SIZE + filter_phase]; 
-            bram_wraddr = intermed_addr;
-            bram_wren = 1; 
+                weight_addr = oc_phase * (IN_CHANNELS * KERNEL_SIZE * KERNEL_SIZE + 1) + ic * KERNEL_SIZE * KERNEL_SIZE + filter_phase;
+                weight_data = weight_n_bias[weight_addr];
+                intermed_pot = bram_rdat + (weight_data - w_zpt)*w_sfactor;
+//                intermed_pot = bram_rdat + (weight_n_bias[oc_phase * (IN_CHANNELS * KERNEL_SIZE * KERNEL_SIZE + 1) + ic * KERNEL_SIZE * KERNEL_SIZE + filter_phase] - w_zpt)*w_sfactor;
+                if(intermed_pot > 255) bram_wrdat = 255;
+                else if(intermed_pot < -255) bram_wrdat = -255;
+                else bram_wrdat = intermed_pot;
+                bram_wraddr = intermed_addr;
+                bram_wren = 1; 
            end
 
         end
@@ -150,25 +160,25 @@ module conv_nc #(
                 bram_raddr = 0;
                 activ_membr_calc_stage_nxt = 0;
             end
-            membr_pot_nxt = weight_n_bias[(oc_phase + 1) * IN_CHANNELS * KERNEL_SIZE * KERNEL_SIZE]  + bram_rdat;
+            bias_addr = (oc_phase+1) * IN_CHANNELS * KERNEL_SIZE * KERNEL_SIZE + oc_phase;
+            bias_data = weight_n_bias[bias_addr];
+            //membr_pot_nxt = bram_rdat + bias_data;  
+            membr_pot_nxt = bias_data*b_sfactor  + bram_rdat;
+//            membr_pot_nxt = (weight_n_bias[(oc_phase + 1) * IN_CHANNELS * KERNEL_SIZE * KERNEL_SIZE] - b_zpt)*b_sfactor  + bram_rdat;
             
             if(activ_membr_calc_stage) begin
                 bram_wraddr = intermed_addr;
                 bram_wren = 1; 
-                if(membr_pot > signed_POSITIVE_THRESHOLD) begin 
-                    post_syn_spk_nxt[bram_raddr] = 1;
+                if(membr_pot > signed_POSITIVE_THRESHOLD) begin
+                    spk_ctr++; 
+                    post_syn_spk_nxt[intermed_addr] = 1;
                     if(last_time_step) bram_wrdat = 0;
-                    else begin
-                        `ifdef SIM
-                            bram_wrdat = (membr_pot - signed_POSITIVE_THRESHOLD)*BETA;
-                        `else
-                            bram_wrdat = (membr_pot - signed_POSITIVE_THRESHOLD)>>>1;
-                        `endif
-                    end
+                    else 
+                        bram_wrdat = (membr_pot - signed_POSITIVE_THRESHOLD)*BETA;
                 end else begin
-                    post_syn_spk_nxt[bram_raddr] = 0;
+                    post_syn_spk_nxt[intermed_addr] = 0;
                     if(last_time_step) bram_wrdat = 0;
-                    else bram_wrdat = (membr_pot - signed_POSITIVE_THRESHOLD);
+                    else bram_wrdat = membr_pot*BETA;
                 end
             end
         end
