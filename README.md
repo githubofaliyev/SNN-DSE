@@ -14,8 +14,7 @@ If you find this code useful in your work, please cite the following source:
   journal={arXiv preprint arXiv:2408.14437},
   year={2024}
 }
-
-
+```
 
 ## Parameters
 
