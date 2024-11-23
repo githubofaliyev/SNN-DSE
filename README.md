@@ -5,14 +5,17 @@ The related paper has been accepted in [IEEE JETCAS'23](https://ieeexplore.ieee.
 [![Paper](https://img.shields.io/badge/Paper-IEEE%20JETCAS-blue.svg)](https://ieeexplore.ieee.org/document/10299654)
 [![arXiv](https://img.shields.io/badge/arXiv-2310.16745-b31b1b.svg)](https://arxiv.org/pdf/2310.16745.pdf)
 
-## Citation
-If you use this code, please cite the following paper:
+If you find this code useful in your work, please cite the following source:
+
+```bibtex
 @article{aliyev2024sparsity,
   title={Sparsity-Aware Hardware-Software Co-Design of Spiking Neural Networks: An Overview},
   author={Aliyev, Ilkin and Svoboda, Kama and Adegbija, Tosiron and Fellous, Jean-Marc},
   journal={arXiv preprint arXiv:2408.14437},
   year={2024}
 }
+
+
 
 ## Parameters
 
