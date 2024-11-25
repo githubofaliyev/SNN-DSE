@@ -3,7 +3,9 @@ This repository contains the implementation of a novel hybrid inference architec
 - Hybrid Architecture: Dense core for input layer processing and sparse cores for event-driven spiking convolutions
 - Quantization Analysis: Investigation of quantization effects on network sparsity
 - FPGA Implementation: Implemented on Xilinx Virtex UltraScale+ FPGA
-- Key performance indiciators: (1) up 3.4× energy improvement with quantization, and (2) 10% accuracy improvement and 26.4× less energy consumption per image over rate coding
+- Key performance indicators:
+  - Up to 3.4× energy improvement with quantization
+  - 10% accuracy improvement and 26.4× less energy consumption per image over rate coding
 
 <table style="width: 75%;">
   <tr>
