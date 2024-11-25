@@ -10,9 +10,9 @@ The paper presents implementation details for so-called hybrid hardware architec
 </table>
 
 
-<table>
+<table style="width: 100%;">
   <tr>
-    <td><img src="https://github.com/user-attachments/assets/eba5b992-1937-4a19-b70a-177ca4dd3b10" alt="image" width="300"/></td>
+    <td><img src="https://github.com/user-attachments/assets/eba5b992-1937-4a19-b70a-177ca4dd3b10" alt="image" style="width: 100%;"/></td>
   </tr>
 </table>
 
