@@ -4,10 +4,11 @@ The paper presents implementation details for so-called hybrid hardware architec
 
 <table style="width: 100%;">
   <tr>
-    <td><img src="https://github.com/user-attachments/assets/239feb16-35c7-418e-88e6-704810955b42" alt="c100" width="300"/></td>
-    <td><img src="https://github.com/user-attachments/assets/9793d8e7-8a16-495f-b1fa-493ff603e3c3" alt="svhn" width="300"/></td>
+    <td style="width: 50%;"><img src="https://github.com/user-attachments/assets/239feb16-35c7-418e-88e6-704810955b42" alt="c100" style="width: 100%;"/></td>
+    <td style="width: 50%;"><img src="https://github.com/user-attachments/assets/9793d8e7-8a16-495f-b1fa-493ff603e3c3" alt="svhn" style="width: 100%;"/></td>
   </tr>
 </table>
+
 
 <table>
   <tr>
