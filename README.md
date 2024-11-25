@@ -1,5 +1,3 @@
-This repository contains the corresponding code from the paper.
-
 This repository contains the implementation of a novel hybrid inference architecture for direct-coded Spiking Neural Networks (SNNs). Our work addresses the challenges in efficient input encoding for SNNs and proposes a hardware architecture that combines dense and sparse processing cores to maximize performance and energy efficiency.
 ## Key Features
 - Hybrid Architecture: Dense core for input layer processing and sparse cores for event-driven spiking convolutions
@@ -18,7 +16,7 @@ This repository contains the implementation of a novel hybrid inference architec
   <img src="https://github.com/user-attachments/assets/eba5b992-1937-4a19-b70a-177ca4dd3b10" alt="image" style="width: 75%;"/>
 </div>
 
-
+Corresponding paper.
 If you find this code useful in your work, please cite the following source:
 
 
