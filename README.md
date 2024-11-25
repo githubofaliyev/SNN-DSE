@@ -10,10 +10,10 @@ The paper presents implementation details for so-called hybrid hardware architec
 </table>
 
 
-<table style="width: 100%; text-align: center;"> 
-  <tr> 
-    <td style="text-align: center;"> <img src="https://github.com/user-attachments/assets/eba5b992-1937-4a19-b70a-177ca4dd3b10" alt="image" style="width: 75%; display: block; margin: 0 auto;"/> 
-  </td> </tr> </table> 
+<div style="text-align: center;">
+  <img src="https://github.com/user-attachments/assets/eba5b992-1937-4a19-b70a-177ca4dd3b10" alt="image" style="width: 75%;"/>
+</div>
+
 
 If you find this code useful in your work, please cite the following source:
 
