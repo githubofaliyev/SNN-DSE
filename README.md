@@ -2,17 +2,17 @@ This repository contains the corresponding code from the paper.
 
 The paper presents implementation details for so-called hybrid hardware architecture for direct-coded SNNs -- essentially combining ANN and SNN layers in a single network. The architecture, in turn, enables SNN gain.
 
-<table style="width: 100%;">
+<table style="width: 75%;">
   <tr>
-    <td style="width: 50%;"><img src="https://github.com/user-attachments/assets/239feb16-35c7-418e-88e6-704810955b42" alt="c100" style="width: 100%;"/></td>
-    <td style="width: 50%;"><img src="https://github.com/user-attachments/assets/9793d8e7-8a16-495f-b1fa-493ff603e3c3" alt="svhn" style="width: 100%;"/></td>
+    <td style="width: 50%;"><img src="https://github.com/user-attachments/assets/239feb16-35c7-418e-88e6-704810955b42" alt="c100" style="width: 75%;"/></td>
+    <td style="width: 50%;"><img src="https://github.com/user-attachments/assets/9793d8e7-8a16-495f-b1fa-493ff603e3c3" alt="svhn" style="width: 75%;"/></td>
   </tr>
 </table>
 
 
-<table style="width: 100%;">
+<table style="width: 75%;">
   <tr>
-    <td><img src="https://github.com/user-attachments/assets/eba5b992-1937-4a19-b70a-177ca4dd3b10" alt="image" style="width: 100%;"/></td>
+    <td><img src="https://github.com/user-attachments/assets/eba5b992-1937-4a19-b70a-177ca4dd3b10" alt="image" style="width: 75%;"/></td>
   </tr>
 </table>
 
