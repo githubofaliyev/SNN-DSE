@@ -1,6 +1,10 @@
 This repository contains the corresponding code from the paper.
 
-The paper presents implementation details for so-called hybrid hardware architecture for direct-coded SNNs -- essentially combining ANN and SNN layers in a single network. The architecture, in turn, enables SNN gain.
+This repository contains the implementation of a novel hybrid inference architecture for direct-coded Spiking Neural Networks (SNNs). Our work addresses the challenges in efficient input encoding for SNNs and proposes a hardware architecture that combines dense and sparse processing cores to maximize performance and energy efficiency.
+## Key Features
+- Hybrid Architecture: Dense core for input layer processing and sparse cores for event-driven spiking convolutions
+- Quantization Analysis: Investigation of quantization effects on network sparsity
+- FPGA Implementation: Implemented on Xilinx Virtex UltraScale+ FPGA
 
 <table style="width: 75%;">
   <tr>
