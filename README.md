@@ -10,14 +10,10 @@ This repository contains the implementation of a novel hybrid inference architec
 <table style="width: 75%;">
   <tr>
     <td style="width: 50%;"><img src="https://github.com/user-attachments/assets/239feb16-35c7-418e-88e6-704810955b42" alt="c100" style="width: 75%;"/></td>
-    <td style="width: 50%;"><img src="https://github.com/user-attachments/assets/9793d8e7-8a16-495f-b1fa-493ff603e3c3" alt="svhn" style="width: 75%;"/></td>
+    <img src="https://github.com/user-attachments/assets/eba5b992-1937-4a19-b70a-177ca4dd3b10" alt="image" style="width: 75%;"/>
   </tr>
 </table>
 
-
-<div style="text-align: center;">
-  <img src="https://github.com/user-attachments/assets/eba5b992-1937-4a19-b70a-177ca4dd3b10" alt="image" style="width: 75%;"/>
-</div>
 
 Corresponding paper is available on Arxiv [![arXiv](https://img.shields.io/badge/arXiv-2310.16745-b31b1b.svg)](https://arxiv.org/pdf/2411.15409). 
 If you find this code useful in your work, please cite the following source:
