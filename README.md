@@ -10,7 +10,7 @@ This repository contains the implementation of a novel hybrid inference architec
 <table style="width: 75%;">
   <tr>
     <td style="width: 50%;"><img src="https://github.com/user-attachments/assets/239feb16-35c7-418e-88e6-704810955b42" alt="c100" style="width: 75%;"/></td>
-    <img src="https://github.com/user-attachments/assets/eba5b992-1937-4a19-b70a-177ca4dd3b10" alt="image" style="width: 75%;"/>
+    <td style="width: 50%;"><img src="https://github.com/user-attachments/assets/eba5b992-1937-4a19-b70a-177ca4dd3b10" alt="c100" style="width: 75%;"/></td>
   </tr>
 </table>
 
