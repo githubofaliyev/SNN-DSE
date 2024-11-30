@@ -1,4 +1,4 @@
-`include "C:/Users/jlopezramos/Desktop/Vivado Projects/Models/CIFAR10 Fixed MP S2 T1 INT4 (86.69%)_{1_4_2_9_4_3_20_1_1}/macros.txt"
+`include "path to macros file"
 
 module top_wrapper #(
     parameter TIME_STEPS = 3,

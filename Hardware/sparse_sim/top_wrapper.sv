@@ -1,4 +1,4 @@
-`include "C:/Users/School/Desktop/Rate Projects/Models/CIFAR10 Rate Fixed MP S2 T1 INT4 (77.37%)_{1_8_4_18_6_6_20_2_1}/macros.txt"
+`include "path to macros file"
 
 module top_wrapper #(
     parameter TIME_STEPS = 25,

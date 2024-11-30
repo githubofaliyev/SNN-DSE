@@ -1,7 +1,4 @@
-//`include "C:/Users/jlopezramos/Desktop/Vivado Projects/Models/FP32_S2_{2_56_48_27_30_28_10_4_5}/sfactors.txt"
-//`include "C:/Users/jlopezramos/Desktop/Vivado Projects/Models/sfactors_synth.txt"
-  
-`include "C:/Users/jlopezramos/Desktop/Vivado Projects/Models/SVHN T2 INT4 (93.99%)_{1_14_2_18_4_8_28_2_4}/macros.txt"
+`include "path to macros file"
   
 module top_wrapper #(
     parameter TIME_STEPS = 3,

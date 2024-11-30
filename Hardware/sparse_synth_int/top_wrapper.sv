@@ -1,5 +1,4 @@
-`include "C:/Users/jlopezramos/Desktop/Vivado Projects/Models/DVSGesture/Fast Sigmoid/DVSGesture T0 TW300K CS(0.25) SL(2.0) INT4 (92.05%)_{64_28_48_54_120_126_140_56_50}/macros.txt"
-//`include "C:/Users/jlopezramos/Desktop/Vivado Projects/Models/sfactors_synth.txt"
+`include "path to macros file"
   
 module top_wrapper #(
     parameter CONV_1_1_INPUT_CHANNELS = 2, 
