@@ -12,11 +12,10 @@ from brevitas.quant.scaled_int import Int8BiasPerTensorFloatInternalScaling as I
 from brevitas.quant.scaled_int import Int8WeightPerTensorFloat as Int8Weight
 
 data_path = "./datasets/"
-config = direct_config
 dataset = CIFAR10(config, data_path)
 
 for trial in range(1, 3):
-    for is_quantized in (False, True):
+    for is_quantized in (True,):
         if is_quantized:
             weight_quant = Int8Weight
             bias_quant = Int8Bias
@@ -38,19 +37,19 @@ for trial in range(1, 3):
         start_date_time_obj = datetime.now()
         start_date_time_str = datetime.now().strftime("%m_%d_%Y-%I_%M_%S_%p")
 
-        experiment_name = f'{dataset.name} S{config["num_steps"]} T{trial} '
+        experiment_name = f'{dataset.name} S{dataset.num_steps} T{trial} '
         if (is_quantized):
             experiment_name += f'INT{config["num_bits"]}'
         else:
             experiment_name += f'FP32'
 
-        models_path = f'./{dataset.name} S{config["num_steps"]} {start_date_time_str}/'
+        models_path = f'./{dataset.name} S{dataset.num_steps} {start_date_time_str}/'
         os.makedirs(models_path, exist_ok=True)
         log = open(f'{models_path}/{experiment_name} Log {start_date_time_str}.log', 'w')
         log.write("Config\n")
         log.write(
-            f'num_epochs:{config["num_epochs"]}, batch_size:{config["batch_size"]}, num_steps:{config["num_steps"]}, '
-            f'pop_size:{config["pop_size"]}\n\n')
+            f'num_epochs:{dataset.num_steps}, batch_size:{dataset.batch_size}, num_steps:{dataset.num_steps}, '
+            f'pop_size:{dataset.pop_size}\n\n')
 
         print(f"=======Training Net=======\n======={experiment_name}======\n")
         log.write(f"=======Training Net=======\n======={experiment_name}======\n")
@@ -82,9 +81,9 @@ for trial in range(1, 3):
                     os.remove(old_model_path)
 
             print(f"Epoch: {epoch} \tCurrent acc: {curr_accuracy:.2f}%, Best acc: {best_accuracy:.2f}%,      "
-                  f"Elapsed Time: {datetime.now() - start_date_time_obj}")
+                  f"Elapsed Time: {datetime.now() - start_date_time_obj}\n")
             log.write(f"Epoch: {epoch} \tCurrent acc: {curr_accuracy:.2f}%, Best acc: {best_accuracy:.2f}%,      "
-                      f"Elapsed Time: {datetime.now() - start_date_time_obj}")
+                      f"Elapsed Time: {datetime.now() - start_date_time_obj}\n")
 
         log.write(f"Stopping after {config['num_epochs']} Epochs\n")
         log.close()

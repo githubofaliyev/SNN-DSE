@@ -111,7 +111,7 @@ class CIFAR10Rate(DatasetBase):
         self.config = config
         self.data_path = data_path
 
-        self.name = "CIFAR10 Rate"
+        self.name = "CIFAR10_Rate"
         self.num_steps = 25
         self.batch_size = 128
         self.num_classes = 10

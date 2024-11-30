@@ -1,6 +1,6 @@
 from torchvision import transforms
 
-direct_config = {
+config = {
             "seed": 0,  # random seed
 
             # Quantization
@@ -34,4 +34,4 @@ direct_config = {
                 transforms.ToTensor(),
                 transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))
             ])
-        }
+}
