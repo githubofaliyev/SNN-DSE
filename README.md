@@ -14,15 +14,15 @@ This repository contains the implementation of a novel hybrid inference architec
   </tr>
 </table>
 
-Corresponding paper is available on Arxiv [![arXiv](https://img.shields.io/badge/arXiv-2310.16745-b31b1b.svg)](https://arxiv.org/pdf/2411.15409). 
+Corresponding paper is available on Arxiv [![arXiv](https://img.shields.io/badge/https://arxiv.org/pdf/2411.15409.svg)](https://arxiv.org/pdf/2411.15409). 
 If you find this code useful in your work, please cite the following source:
 
 
 ```bibtex
-@article{aliyev2024sparsity,
-  title={Sparsity-Aware Hardware-Software Co-Design of Spiking Neural Networks: An Overview},
-  author={Aliyev, Ilkin and Svoboda, Kama and Adegbija, Tosiron and Fellous, Jean-Marc},
-  journal={arXiv preprint arXiv:2408.14437},
+@article{aliyev2024exploring,
+  title={Exploring the Sparsity-Quantization Interplay on a Novel Hybrid SNN Event-Driven Architecture},
+  author={Aliyev, Ilkin and Lopez, Jesus and Adegbija, Tosiron},
+  journal={arXiv preprint arXiv:2411.15409},
   year={2024}
 }
 ```
