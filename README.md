@@ -26,6 +26,36 @@ If you find this code useful in your work, please cite the following source:
   year={2024}
 }
 ```
+# Scripts
+## Requirements/Dependencies
+- `Python 3.11` (Newer versions were not compatible)
+- `PyTorch 2.2.2 with CUDA 12.1`
+- `snnTorch 0.7.0` (Newer versions may be incompatible with these repo)
+
+## Overview
+- `Training.py` Main training script
+- `Extract.py` Extracts weights and biases from pre-trained models for use in hardware simulation
+- `Net.py` Net class definition
+- `Configs.py` Defines hyperparameters used across all datasets
+- `Datasets.py` Defines classes for the datasets used. They include dataset specific parameters used for to conduct the experiments
+- `Functions.py` Defines functions used in `Training.py` and `Extract.py`
+
+## Training
+Training is mostly automated and the default values are set to the values used to run the experiments. To train using CIFAR10, just run the script as is. The scripts will train 2 sets of one non-quantized model and one of an Int4 quantized model. As it runs through the epochs it will save the weights and biases of the best epoch in an organized folder structure and delete the previous epoch. To change the dataset to be trained just change the dataset class near the top of `Training.py`.
+
+## Weight+Bias Extraction
+In `Extract.py`
+1. Set the model path to the path of saved model weights
+2. Set the dataset to the same dataset the saved model was trained with
+3. Set the amount of Event Control Units(ECs) used in each layer. Must be a factor of the conv layer size. Factors of the layer sizes used in the paper are in the comments
+
+> [!WARNING]
+> The EC size for conv_1_1 should always be set to 1 with direct coded models. The dense layer in the hybrid hardware is hardcoded to use one ECU.
+> For rate coded models, the EC size can be set to any factor of the layer size like the other layers.
+   
+   
+4. Run script.
+
 
 ## Parameters
 
