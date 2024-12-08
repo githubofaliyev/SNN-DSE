@@ -115,6 +115,7 @@ class SVHN(DatasetBase):
         return DataLoader(self.test_set, batch_size=1, shuffle=False)
 
 
+# Rate encoded verision of CIFAR10 class. Uses same dataset, but different parameters
 class CIFAR10Rate(DatasetBase):
     def __init__(self, config, data_path):
         super().__init__()
