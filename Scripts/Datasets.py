@@ -7,6 +7,7 @@ class DatasetBase():
         self.num_classes = None
         self.num_train_samples = None
         self.num_epochs = None
+        self.num_steps = None
 
     def GetTrainLoader(self):
         raise NotImplementedError
@@ -24,10 +25,13 @@ class CIFAR10(DatasetBase):
         self.config = config
         self.data_path = data_path
 
+        # Do not change. Hard values.
         self.name = "CIFAR10"
+        self.num_classes = 10
+
+        # Free to change.
         self.num_steps = 2
         self.batch_size = 512
-        self.num_classes = 10
         self.num_epochs = 225
         self.pop_size = 1000
         self.is_rate_encoded = False
@@ -53,12 +57,15 @@ class CIFAR100(DatasetBase):
         self.config = config
         self.data_path = data_path
 
+        # Do not change. Hard values.
         self.name = "CIFAR100"
-        self.num_steps = 2
-        self.batch_size = 512
         self.num_classes = 100
+
+        # Free to change.
+        self.batch_size = 512
         self.num_epochs = 500
         self.pop_size = 5000
+        self.num_classes = 100
         self.is_rate_encoded = False
 
         self.train_set = datasets.CIFAR100(root=self.data_path, train=True, download=True,
@@ -82,12 +89,15 @@ class SVHN(DatasetBase):
         self.config = config
         self.data_path = data_path
 
+        # Do not change. Hard values.
         self.name = "SVHN"
-        self.num_steps = 2
-        self.batch_size = 512
         self.num_classes = 10
+
+        # Free to change.
+        self.batch_size = 512
         self.num_epochs = 225
         self.pop_size = 1000
+        self.num_steps = 2
         self.is_rate_encoded = False
 
         self.train_set = datasets.SVHN(root=data_path, split="train", download=True,
@@ -111,10 +121,13 @@ class CIFAR10Rate(DatasetBase):
         self.config = config
         self.data_path = data_path
 
+        # Do not change. Hard values.
         self.name = "CIFAR10_Rate"
+        self.num_classes = 10
+
+        # Free to change.
         self.num_steps = 25
         self.batch_size = 128
-        self.num_classes = 10
         self.num_epochs = 100
         self.pop_size = 1000
         self.is_rate_encoded = True

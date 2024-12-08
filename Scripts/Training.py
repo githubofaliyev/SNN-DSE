@@ -15,7 +15,7 @@ data_path = "./datasets/"
 dataset = CIFAR10(config, data_path)
 
 for trial in range(1, 3):
-    for is_quantized in (True,):
+    for is_quantized in (False, True):
         if is_quantized:
             weight_quant = Int8Weight
             bias_quant = Int8Bias

@@ -1,0 +1,5 @@
+torch~=2.2.2+cu121
+snntorch~=0.7.0
+brevitas~=0.10.2
+torchvision~=0.17.2+cu121
+numpy~=1.26.3

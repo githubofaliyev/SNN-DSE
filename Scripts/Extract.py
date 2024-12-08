@@ -120,8 +120,8 @@ sparse_core_weights_and_biases(net.Qconv3_1, full_path_sc, "3_1", conv_3_1, is_q
 sparse_core_weights_and_biases(net.Qconv3_2, full_path_sc, '3_2', conv_3_2, is_quantized)
 sparse_core_weights_and_biases(net.Qconv3_3, full_path_sc, '3_3', conv_3_3, is_quantized)
 
-create_macro_file(net, dir_name, is_quantized, conv_1_1, conv_1_2, conv_2_1, conv_2_2, conv_3_1, conv_3_2, conv_3_3,
-                  fc_1, fc_2)
+create_macro_file(net, dir_name, is_quantized, dataset, conv_1_1, conv_1_2, conv_2_1, conv_2_2, conv_3_1,
+                  conv_3_2, conv_3_3, fc_1, fc_2)
 
 
 NEURAL_SIZE_1 = int(FC1_SIZE / fc_1)

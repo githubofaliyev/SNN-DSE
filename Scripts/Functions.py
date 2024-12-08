@@ -125,7 +125,7 @@ def sparse_core_weights_and_biases(conv_layer, dir_name, l, n, is_quantized):
                     file.write("\n")
 
 
-def create_macro_file(net, dir_name, is_quantized, conv_1_1_ec_size, conv_1_2_ec_size, conv_2_1_ec_size,
+def create_macro_file(net, dir_name, is_quantized, dataset, conv_1_1_ec_size, conv_1_2_ec_size, conv_2_1_ec_size,
                       conv_2_2_ec_size,
                       conv_3_1_ec_size, conv_3_2_ec_size, conv_3_3_ec_size, fc1_ec_size, fc2_ec_size):
     macro_path = os.path.abspath(f"{dir_name}/macros.txt")
@@ -133,6 +133,11 @@ def create_macro_file(net, dir_name, is_quantized, conv_1_1_ec_size, conv_1_2_ec
 
     with open(macro_path, 'w') as file:
         file.write(f'`define model_directory "{dir_name}"\n\n')
+
+        if dataset.is_rate_encoded:
+            file.write(f'`define time_steps {dataset.time_steps}\n')
+
+        file.write(f'`define FC2_size {dataset.pop_size}\n')
 
         file.write(f"`define conv_1_1_ec_size {conv_1_1_ec_size}\n")
         file.write(f"`define conv_1_2_ec_size {conv_1_2_ec_size}\n")
