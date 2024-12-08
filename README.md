@@ -31,6 +31,7 @@ If you find this code useful in your work, please cite the following source:
 - `Python 3.11` (Newer versions were not compatible)
 - `PyTorch 2.2.2 with CUDA 12.1`
 - `snnTorch 0.7.0` (Newer versions may be incompatible with these repo)
+- `Brevitas 0.10.2`
 
 ## Overview
 - `Training.py` Main training script
