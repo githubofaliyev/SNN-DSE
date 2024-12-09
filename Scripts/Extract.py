@@ -24,8 +24,8 @@ from Functions import *
 from Configs import config
 from Net import *
 
-model_name = "CIFAR10 S2 T1 INT4 (84.10%) EP56 11_29_2024-09_10_39_PM"
-model_path = os.path.join("./CIFAR10 S2 11_29_2024-08_35_55_PM/", model_name + ".pth")
+model_name = "model_file_name"
+model_path = os.path.join("./model_folder/", model_name + ".pth")
 
 data_path = "./datasets/"
 dataset = CIFAR10(config, data_path)
