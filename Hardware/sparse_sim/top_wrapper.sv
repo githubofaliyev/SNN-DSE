@@ -1,7 +1,6 @@
 `include "path to macros file"
 
 module top_wrapper #(
-    parameter TIME_STEPS = 25,
     parameter CONV_1_1_INPUT_CHANNELS = 3,
     parameter CONV_1_1_OUTPUT_CHANNELS = 64,
     parameter CONV_1_1_KERNEL_SIZE = 3,
@@ -13,6 +12,8 @@ module top_wrapper #(
     input input_avail,
     output logic conv_1_1_avail
 );
+
+parameter TIME_STEPS = `time_steps;
 
 parameter USER_SET_CONV_1_2_SIZE = 112;
 parameter USER_SET_CONV_2_1_SIZE = 128;
