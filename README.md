@@ -91,28 +91,5 @@ It should be noted that there is a base latency for each layer though that can't
 To find out what the latency of this process is you can look at several signals named `CONV_X_X_input_spks`. Where the "X_X" refers to one of the convolution layers. As the name implies this this the amount of spikes that are input into the layer. The period between when this signal starts increasing and when it stops increasing is the latency of this process.
 This process latency cannot be reduced in the current iteration of the hardware.
 
-
-## Parameters
-
-The software uses some global variables and constants defined in "defines.h". You can modify them according to your needs. Some of them are:
-
-- INPUT_LAYER_SIZE: The number of neurons in the input layer.
-- LAYER0_SIZE_LOGICAL: The number of neurons in the first hidden layer.
-- LAYER1_SIZE_LOGICAL: The number of neurons in the second hidden layer.
-- LAYER2_SIZE_LOGICAL: The number of neurons in the output layer.
-- L0_NEURON_UNIT_SIZE: The neuron unit size in the first hidden layer.
-- L1_NEURON_UNIT_SIZE: The neuron unit size in the second hidden layer.
-- L2_NEURON_UNIT_SIZE: The neuron unit size in the output layer.
-- TIME_STEP: The number of time steps for the spike train length.
-
-## Usage
-To run the SystemC software, follow these steps:
-
-1. Make sure you have SystemC installed on your system and set the `SYSTEMC` environment variable to point to its installation directory.
-2. Run `./custom_run.sh` to execute the shell script that will generate neuron modules, parse data files, compile and run the SNN model.
-3. Wait for the simulation to finish and check the output file `trace_log.txt` for the simulation time and output spikes.
-
-Alternatively, you can run each step manually using the commands in `custom_run.sh`.
-
 ## License
 This code is released under the MIT license. See LICENSE.txt for more details.
