@@ -4,8 +4,8 @@ module top_wrapper #(
     parameter CONV_1_1_INPUT_CHANNELS = 2, 
     parameter CONV_1_1_OUTPUT_CHANNELS = 64,
     parameter CONV_1_1_KERNEL_SIZE = 3,
-	parameter CONV_1_1_INPUT_FRAME_WIDTH = 32,
-	parameter model_dir = `model_directory
+    parameter CONV_1_1_INPUT_FRAME_WIDTH = 32,
+    parameter model_dir = `model_directory
 ) (
     input clk, rst,
     input input_avail,
