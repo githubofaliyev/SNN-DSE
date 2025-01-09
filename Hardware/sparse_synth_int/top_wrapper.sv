@@ -4,17 +4,17 @@ module top_wrapper #(
     parameter CONV_1_1_INPUT_CHANNELS = 2, 
     parameter CONV_1_1_OUTPUT_CHANNELS = 64,
     parameter CONV_1_1_KERNEL_SIZE = 3,
-    parameter model_dir = "C:/Users/jlopezramos/Desktop/Vivado Projects/Models/FP32_S2_{1_56_48_27_30_28_10_8_10}"
+	parameter CONV_1_1_INPUT_FRAME_WIDTH = 32,
+	parameter model_dir = `model_directory
 ) (
     input clk, rst,
     input input_avail,
     output logic conv_1_1_avail
 ); 
 
-parameter CONV_1_1_INPUT_FRAME_WIDTH = 64; // change this for NMNIST or Gesture
 parameter TIME_STEPS = `time_steps;
 
-parameter USER_SET_BIT_WIDTH = 4;
+parameter USER_SET_BIT_WIDTH = 3;
 
 parameter USER_SET_CONV_1_2_SIZE = 28;
 parameter USER_SET_CONV_2_1_SIZE = 48;

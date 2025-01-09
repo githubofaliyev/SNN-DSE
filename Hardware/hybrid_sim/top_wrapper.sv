@@ -1,7 +1,7 @@
-`include "path to macros file"
+`include "C:/Users/jlopezramos/Desktop/PyCharmProjects/DATE 2025 Python/Extracted_Models/CIFAR100_S2_T1/CIFAR100_S2_T1 FP32_(58.41%)_EP462_{1_56_64_72_80_126_140_28_25}/macros.txt"
 
 module top_wrapper #(
-    parameter TIME_STEPS = 3,
+    parameter TIME_STEPS = 2,
     parameter CONV_1_1_INPUT_CHANNELS = 3,
     parameter CONV_1_1_OUTPUT_CHANNELS = 64,
     parameter CONV_1_1_KERNEL_SIZE = 3,
@@ -21,7 +21,7 @@ parameter USER_SET_CONV_3_1_SIZE = 480;
 parameter USER_SET_CONV_3_2_SIZE = 504;
 parameter USER_SET_CONV_3_3_SIZE = 560;
 parameter USER_SET_FC_1_SIZE = 1064;
-parameter USER_SET_FC_2_SIZE = 1000;
+parameter USER_SET_FC_2_SIZE = `FC2_size;
 
 parameter USER_SET_CONV_1_1_EC_SIZE = `conv_1_1_ec_size;
 parameter USER_SET_CONV_1_2_EC_SIZE = `conv_1_2_ec_size;
@@ -1561,51 +1561,107 @@ parameter USER_SET_FC_2_EC_SIZE = `fc2_ec_size;
     
     
     
-    // Write the input spike count of layers to spk.txt 
-    int spk_txt, spk_txt_state, spk_txt_state_next;
+    // Write the input spike count of layers to cycles and spikes.txt 
+    int cycl_spk_txt, cycl_spk_txt_state, cycl_spk_txt_state_next;
+    int current_layer_latency, previous_layer_latency = 0;
     
     always_ff @(posedge clk) begin
-        spk_txt_state <= spk_txt_state_next;
+        cycl_spk_txt_state <= cycl_spk_txt_state_next;
     end
     
     
     always_comb begin
         if (rst) begin
-            spk_txt_state_next = 0;
+            cycl_spk_txt_state_next = 0;
         end else begin
-            spk_txt_state_next = spk_txt_state;
+            cycl_spk_txt_state_next = cycl_spk_txt_state;
             
-            case(spk_txt_state)
-                0:begin 
-                    if (fc_2_spk_RAM_loaded) begin
-                        spk_txt = $fopen({`model_directory, "/spikes and cycles.txt"}, "w");
+            case(cycl_spk_txt_state)
+                0: begin
+                    if (conv_1_1_RAM_loaded) begin
+                        cycl_spk_txt = $fopen({`model_directory, "/cycles and spikes.txt"}, "w");
                         
-                        if (spk_txt) begin
-                            $display("spikes.txt was opened successfully");
-                            spk_txt_state_next = 1;
-                        end else begin
+                        if (cycl_spk_txt) begin
+                            $display("cycles and spikes.txt was opened successfully");
+                             $fdisplay(cycl_spk_txt, "Latency per layer:");
+                            
+                            current_layer_latency = $time/20;
+                            $fdisplay(cycl_spk_txt, "%.0f", current_layer_latency - previous_layer_latency);
+                            previous_layer_latency = current_layer_latency;
+                            
+                            cycl_spk_txt_state_next = 1;
+                        end 
+                        else begin
                             $display("spikes.txt could not be opened");
-                            spk_txt_state_next = 2;
+                            cycl_spk_txt_state_next = 3;
                         end
-                    end
+                    end 
                 end
                 1: begin
-                    $fdisplay(spk_txt, "%0d", CONV_1_2_input_spks);
-                    $fdisplay(spk_txt, "%0d", CONV_2_1_input_spks);
-                    $fdisplay(spk_txt, "%0d", CONV_2_2_input_spks);
-                    $fdisplay(spk_txt, "%0d", CONV_3_1_input_spks);
-                    $fdisplay(spk_txt, "%0d", CONV_3_2_input_spks);
-                    $fdisplay(spk_txt, "%0d", CONV_3_3_input_spks);
-                    $fdisplay(spk_txt, "%0d", FC1_input_spks_sum);
-                    $fdisplay(spk_txt, "%0d", FC2_input_spks_sum);
-                    $fdisplay(spk_txt, "\n%.0f", $time/20);
-                    spk_txt_state_next = 2;
+                    if (CONV_1_2_spk_RAM_loaded) begin
+                        current_layer_latency = $time/20;
+                        $fdisplay(cycl_spk_txt, "%.0f", current_layer_latency - previous_layer_latency);
+                        previous_layer_latency = current_layer_latency;
+                    end
+                    else if (CONV_2_1_spk_RAM_loaded) begin
+                        current_layer_latency = $time/20;
+                        $fdisplay(cycl_spk_txt, "%.0f", current_layer_latency - previous_layer_latency);
+                        previous_layer_latency = current_layer_latency;
+                    end
+                    else if (CONV_2_2_spk_RAM_loaded) begin
+                        current_layer_latency = $time/20;
+                        $fdisplay(cycl_spk_txt, "%.0f", current_layer_latency - previous_layer_latency);
+                        previous_layer_latency = current_layer_latency;
+                    end
+                    else if (CONV_3_1_spk_RAM_loaded) begin
+                        current_layer_latency = $time/20;
+                        $fdisplay(cycl_spk_txt, "%.0f", current_layer_latency - previous_layer_latency);
+                        previous_layer_latency = current_layer_latency;
+                    end
+                    else if (CONV_3_2_spk_RAM_loaded) begin
+                        current_layer_latency = $time/20;
+                        $fdisplay(cycl_spk_txt, "%.0f", current_layer_latency - previous_layer_latency);
+                        previous_layer_latency = current_layer_latency;
+                    end
+                    else if (CONV_3_3_spk_RAM_loaded) begin
+                        current_layer_latency = $time/20;
+                        $fdisplay(cycl_spk_txt, "%.0f", current_layer_latency - previous_layer_latency);
+                        previous_layer_latency = current_layer_latency;
+                    end
+                    else if (fc_1_spk_RAM_loaded) begin
+                        current_layer_latency = $time/20;
+                        $fdisplay(cycl_spk_txt, "%.0f", current_layer_latency - previous_layer_latency);
+                        previous_layer_latency = current_layer_latency;
+                        cycl_spk_txt_state_next = 2;
+                    end
                 end
                 2: begin
-                    $fclose(spk_txt);
+                    if (fc_2_spk_RAM_loaded) begin
+                        current_layer_latency = $time/20;
+                        $fdisplay(cycl_spk_txt, "%.0f\n", current_layer_latency - previous_layer_latency);
+                        $fdisplay(cycl_spk_txt, "Total latency: %.0f\n\n", current_layer_latency);
+                        
+                        $fdisplay(cycl_spk_txt, "Spikes per layer:");
+                        $fdisplay(cycl_spk_txt, "%0d", CONV_1_2_input_spks);
+                        $fdisplay(cycl_spk_txt, "%0d", CONV_2_1_input_spks);
+                        $fdisplay(cycl_spk_txt, "%0d", CONV_2_2_input_spks);
+                        $fdisplay(cycl_spk_txt, "%0d", CONV_3_1_input_spks);
+                        $fdisplay(cycl_spk_txt, "%0d", CONV_3_2_input_spks);
+                        $fdisplay(cycl_spk_txt, "%0d", CONV_3_3_input_spks);
+                       
+                        $fdisplay(cycl_spk_txt, "%0d", FC1_input_spks_sum);
+                        $fdisplay(cycl_spk_txt, "%0d", FC2_input_spks_sum);
+                        
+                        cycl_spk_txt_state_next = 3;
+                    end
+                end
+                3: begin
+                    $fclose(cycl_spk_txt);
+                    $display("cycles and spikes.txt has been closed");
                 end
             endcase
         end
     end
+    
 
 endmodule

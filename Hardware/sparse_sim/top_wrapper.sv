@@ -22,7 +22,7 @@ parameter USER_SET_CONV_3_1_SIZE = 480;
 parameter USER_SET_CONV_3_2_SIZE = 504;
 parameter USER_SET_CONV_3_3_SIZE = 560;
 parameter USER_SET_FC_1_SIZE = 1064;
-parameter USER_SET_FC_2_SIZE = 1000;
+parameter USER_SET_FC_2_SIZE = `FC2_size;
 
 parameter USER_SET_CONV_1_1_EC_SIZE = `conv_1_1_ec_size;
 parameter USER_SET_CONV_1_2_EC_SIZE = `conv_1_2_ec_size;
@@ -158,7 +158,7 @@ parameter USER_SET_FC_2_EC_SIZE = `fc2_ec_size;
         .b_sfactor(`b_sfactor_2_1),
         .w_zpt(`w_zpt_2_1),
         .b_zpt(`b_zpt_2_1),
-        .WEIGHT_FILENAME($sformatf("%s/weights/conv1_1_nc%0d.txt", model_dir, i))
+        .WEIGHT_FILENAME($sformatf("%s/sc_weights/conv1_1_nc%0d.txt", model_dir, i))
     ) CONV_1_1_nc_i (
         .clk(clk), .rst(rst),
         .en_accum(CONV_1_1_en_accum),
@@ -362,7 +362,7 @@ parameter USER_SET_FC_2_EC_SIZE = `fc2_ec_size;
         .b_sfactor(`b_sfactor_1_2),
         .w_zpt(`w_zpt_1_2),
         .b_zpt(`b_zpt_1_2),
-        .WEIGHT_FILENAME($sformatf("%s/weights/conv1_2_nc%0d.txt", model_dir, i))
+        .WEIGHT_FILENAME($sformatf("%s/sc_weights/conv1_2_nc%0d.txt", model_dir, i))
     ) CONV_1_2_nc_i (
         .clk(clk), .rst(rst),
         .en_accum(CONV_1_2_en_accum),
@@ -576,7 +576,7 @@ parameter USER_SET_FC_2_EC_SIZE = `fc2_ec_size;
         .b_sfactor(`b_sfactor_2_1),
         .w_zpt(`w_zpt_2_1),
         .b_zpt(`b_zpt_2_1),
-        .WEIGHT_FILENAME($sformatf("%s/weights/conv2_1_nc%0d.txt", model_dir, i))
+        .WEIGHT_FILENAME($sformatf("%s/sc_weights/conv2_1_nc%0d.txt", model_dir, i))
     ) CONV_2_1_nc_i (
         .clk(clk), .rst(rst),
         .en_accum(CONV_2_1_en_accum),
@@ -786,7 +786,7 @@ parameter USER_SET_FC_2_EC_SIZE = `fc2_ec_size;
         .b_sfactor(`b_sfactor_2_2),
         .w_zpt(`w_zpt_2_2),
         .b_zpt(`b_zpt_2_2),
-        .WEIGHT_FILENAME($sformatf("%s/weights/conv2_2_nc%0d.txt", model_dir, i))
+        .WEIGHT_FILENAME($sformatf("%s/sc_weights/conv2_2_nc%0d.txt", model_dir, i))
     ) CONV_2_2_nc_i (
         .clk(clk), .rst(rst),
         .en_accum(CONV_2_2_en_accum),
@@ -1001,7 +1001,7 @@ parameter USER_SET_FC_2_EC_SIZE = `fc2_ec_size;
         .b_sfactor(`b_sfactor_3_1),
         .w_zpt(`w_zpt_3_1),
         .b_zpt(`b_zpt_3_1),
-        .WEIGHT_FILENAME($sformatf("%s/weights/conv3_1_nc%0d.txt", model_dir, i))
+        .WEIGHT_FILENAME($sformatf("%s/sc_weights/conv3_1_nc%0d.txt", model_dir, i))
     ) CONV_3_1_nc_i (
         .clk(clk), .rst(rst),
         .en_accum(CONV_3_1_en_accum),
@@ -1209,7 +1209,7 @@ parameter USER_SET_FC_2_EC_SIZE = `fc2_ec_size;
         .b_sfactor(`b_sfactor_3_2),
         .w_zpt(`w_zpt_3_2),
         .b_zpt(`b_zpt_3_2),
-        .WEIGHT_FILENAME($sformatf("%s/weights/conv3_2_nc%0d.txt", model_dir, i))
+        .WEIGHT_FILENAME($sformatf("%s/sc_weights/conv3_2_nc%0d.txt", model_dir, i))
     ) CONV_3_2_nc_i (
         .clk(clk), .rst(rst),
         .en_accum(CONV_3_2_en_accum),
@@ -1417,7 +1417,7 @@ parameter USER_SET_FC_2_EC_SIZE = `fc2_ec_size;
         .b_sfactor(`b_sfactor_3_3),
         .w_zpt(`w_zpt_3_3),
         .b_zpt(`b_zpt_3_3),
-        .WEIGHT_FILENAME($sformatf("%s/weights/conv3_3_nc%0d.txt", model_dir, i))
+        .WEIGHT_FILENAME($sformatf("%s/sc_weights/conv3_3_nc%0d.txt", model_dir, i))
     ) CONV_3_3_nc_i (
         .clk(clk), .rst(rst),
         .en_accum(CONV_3_3_en_accum),
@@ -1619,7 +1619,7 @@ parameter USER_SET_FC_2_EC_SIZE = `fc2_ec_size;
                 bram_wght #(
                     .RAM_DEPTH(FC1_BRAM_DEPTH),
                     .IN_CHANNELS(FC1_INPUT_CHANNELS),
-                    .FILENAME($sformatf("%s/weights/fc1_nc%0d.txt", model_dir, i)))
+                    .FILENAME($sformatf("%s/sc_weights/fc1_nc%0d.txt", model_dir, i)))
                 fc1_wght_ram_i (
                     .clk(clk), .rst(rst),
                     .rdat(fc_1_bram_rdat[i]),
@@ -1739,7 +1739,7 @@ parameter USER_SET_FC_2_EC_SIZE = `fc2_ec_size;
                 (* DONT_TOUCH = "yes" *)
                 bram_wght #(
                     .RAM_DEPTH(FC2_BRAM_DEPTH),
-                    .FILENAME($sformatf("%s/weights/fc2_nc%0d.txt", model_dir, i)))
+                    .FILENAME($sformatf("%s/sc_weights/fc2_nc%0d.txt", model_dir, i)))
                 fc2_wght_ram_i (
                     .clk(clk), .rst(rst),
                     .rdat(fc_2_bram_rdat[i]),
@@ -1763,9 +1763,10 @@ parameter USER_SET_FC_2_EC_SIZE = `fc2_ec_size;
     
     
     
-    // Write the input spike count of layers to spikes and c.txt 
+    // Write the input spike count of layers to "cycles and spikes.txt"
     int cycl_spk_txt, cycl_spk_txt_state, cycl_spk_txt_state_next;
     int FC1_input_spks_sum = 0, FC2_input_spks_sum = 0;
+    int current_layer_latency, previous_layer_latency = 0;
     
     always_ff @(posedge clk) begin
         cycl_spk_txt_state <= cycl_spk_txt_state_next;
@@ -1785,9 +1786,15 @@ parameter USER_SET_FC_2_EC_SIZE = `fc2_ec_size;
                         
                         if (cycl_spk_txt) begin
                             $display("cycles and spikes.txt was opened successfully");
-                            $fdisplay(cycl_spk_txt, "%.0f", $time/20);
+                             $fdisplay(cycl_spk_txt, "Latency per layer:");
+                            
+                            current_layer_latency = $time/20;
+                            $fdisplay(cycl_spk_txt, "%.0f", current_layer_latency - previous_layer_latency);
+                            previous_layer_latency = current_layer_latency;
+                            
                             cycl_spk_txt_state_next = 1;
-                        end else begin
+                        end 
+                        else begin
                             $display("spikes.txt could not be opened");
                             cycl_spk_txt_state_next = 3;
                         end
@@ -1795,32 +1802,49 @@ parameter USER_SET_FC_2_EC_SIZE = `fc2_ec_size;
                 end
                 1: begin
                     if (CONV_1_2_spk_RAM_loaded) begin
-                        $fdisplay(cycl_spk_txt, "%.0f", $time/20);
+                        current_layer_latency = $time/20;
+                        $fdisplay(cycl_spk_txt, "%.0f", current_layer_latency - previous_layer_latency);
+                        previous_layer_latency = current_layer_latency;
                     end
                     else if (CONV_2_1_spk_RAM_loaded) begin
-                        $fdisplay(cycl_spk_txt, "%.0f", $time/20);
+                        current_layer_latency = $time/20;
+                        $fdisplay(cycl_spk_txt, "%.0f", current_layer_latency - previous_layer_latency);
+                        previous_layer_latency = current_layer_latency;
                     end
                     else if (CONV_2_2_spk_RAM_loaded) begin
-                        $fdisplay(cycl_spk_txt, "%.0f", $time/20);
+                        current_layer_latency = $time/20;
+                        $fdisplay(cycl_spk_txt, "%.0f", current_layer_latency - previous_layer_latency);
+                        previous_layer_latency = current_layer_latency;
                     end
                     else if (CONV_3_1_spk_RAM_loaded) begin
-                        $fdisplay(cycl_spk_txt, "%.0f", $time/20);
+                        current_layer_latency = $time/20;
+                        $fdisplay(cycl_spk_txt, "%.0f", current_layer_latency - previous_layer_latency);
+                        previous_layer_latency = current_layer_latency;
                     end
                     else if (CONV_3_2_spk_RAM_loaded) begin
-                        $fdisplay(cycl_spk_txt, "%.0f", $time/20);
+                        current_layer_latency = $time/20;
+                        $fdisplay(cycl_spk_txt, "%.0f", current_layer_latency - previous_layer_latency);
+                        previous_layer_latency = current_layer_latency;
                     end
                     else if (CONV_3_3_spk_RAM_loaded) begin
-                        $fdisplay(cycl_spk_txt, "%.0f", $time/20);
+                        current_layer_latency = $time/20;
+                        $fdisplay(cycl_spk_txt, "%.0f", current_layer_latency - previous_layer_latency);
+                        previous_layer_latency = current_layer_latency;
                     end
                     else if (fc_1_spk_RAM_loaded) begin
-                        $fdisplay(cycl_spk_txt, "%.0f", $time/20);
+                        current_layer_latency = $time/20;
+                        $fdisplay(cycl_spk_txt, "%.0f", current_layer_latency - previous_layer_latency);
+                        previous_layer_latency = current_layer_latency;
                         cycl_spk_txt_state_next = 2;
                     end
                 end
                 2: begin
                     if (fc_2_spk_RAM_loaded) begin
-                        $fdisplay(cycl_spk_txt, "%.0f\n", $time/20);
+                        current_layer_latency = $time/20;
+                        $fdisplay(cycl_spk_txt, "%.0f\n", current_layer_latency - previous_layer_latency);
+                        $fdisplay(cycl_spk_txt, "Total latency: %.0f\n\n", current_layer_latency);
                         
+                        $fdisplay(cycl_spk_txt, "Spikes per layer:");
                         $fdisplay(cycl_spk_txt, "%0d", CONV_1_2_input_spks);
                         $fdisplay(cycl_spk_txt, "%0d", CONV_2_1_input_spks);
                         $fdisplay(cycl_spk_txt, "%0d", CONV_2_2_input_spks);
@@ -1828,10 +1852,10 @@ parameter USER_SET_FC_2_EC_SIZE = `fc2_ec_size;
                         $fdisplay(cycl_spk_txt, "%0d", CONV_3_2_input_spks);
                         $fdisplay(cycl_spk_txt, "%0d", CONV_3_3_input_spks);
                         
-                        for (int i = 0; i < TIME_STEPS-1; i++) FC1_input_spks_sum += fc1_total_spks[i];
+                        for (int i = 0; i < TIME_STEPS; i++) FC1_input_spks_sum += fc1_total_spks[i];
                         $fdisplay(cycl_spk_txt, "%0d", FC1_input_spks_sum);
                         
-                        for (int i = 0; i < TIME_STEPS-1; i++) FC2_input_spks_sum += fc2_total_spks[i];
+                        for (int i = 0; i < TIME_STEPS; i++) FC2_input_spks_sum += fc2_total_spks[i];
                         $fdisplay(cycl_spk_txt, "%0d", FC2_input_spks_sum);
                         cycl_spk_txt_state_next = 3;
                     end

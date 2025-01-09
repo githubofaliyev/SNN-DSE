@@ -1,14 +1,14 @@
 `include "path to macros file"
   
 module top_wrapper #(
-    parameter TIME_STEPS = 3,
+    parameter TIME_STEPS = 2,
     parameter CONV_1_1_INPUT_CHANNELS = 3, 
     parameter CONV_1_1_OUTPUT_CHANNELS = 64,
     parameter CONV_1_1_KERNEL_SIZE = 3,
     parameter CONV_1_1_INPUT_FRAME_WIDTH = 32,
     parameter CONV_1_1_INPUT_FRAME_SIZE = CONV_1_1_INPUT_FRAME_WIDTH*CONV_1_1_INPUT_FRAME_WIDTH,
     parameter model_dir = `model_directory
-//    "C:/Users/jlopezramos/Desktop/Vivado Projects/Models/FP32_S2_{1_56_48_27_30_28_10_8_10}"
+
 ) (
     input clk, rst,
     input input_avail,
@@ -16,43 +16,25 @@ module top_wrapper #(
 );    
  
 parameter USER_SET_BIT_WIDTH = 31;
-//parameter USER_SET_CONV_1_2_SIZE = 112;
-//parameter USER_SET_CONV_2_1_SIZE = 192;
-//parameter USER_SET_CONV_2_2_SIZE = 216; 
-//parameter USER_SET_CONV_3_1_SIZE = 480;
-//parameter USER_SET_CONV_3_2_SIZE = 504;
-//parameter USER_SET_CONV_3_3_SIZE = 560;
-//parameter USER_SET_FC_1_SIZE = 1064;
-//parameter USER_SET_FC_2_SIZE = 1000;
 
-parameter USER_SET_CONV_1_2_SIZE = 28;
-parameter USER_SET_CONV_2_1_SIZE = 48;
-parameter USER_SET_CONV_2_2_SIZE = 54;
-parameter USER_SET_CONV_3_1_SIZE = 120;
-parameter USER_SET_CONV_3_2_SIZE = 126;
-parameter USER_SET_CONV_3_3_SIZE = 140;
+parameter USER_SET_CONV_1_2_SIZE = 112;
+parameter USER_SET_CONV_2_1_SIZE = 128;
+parameter USER_SET_CONV_2_2_SIZE = 216;
+parameter USER_SET_CONV_3_1_SIZE = 480;
+parameter USER_SET_CONV_3_2_SIZE = 504;
+parameter USER_SET_CONV_3_3_SIZE = 560;
 parameter USER_SET_FC_1_SIZE = 1064;
-parameter USER_SET_FC_2_SIZE = 1100;
- 
-//parameter USER_SET_CONV_1_1_EC_SIZE = 1;
-//parameter USER_SET_CONV_1_2_EC_SIZE = 28;
-//parameter USER_SET_CONV_2_1_EC_SIZE = 12; 
-//parameter USER_SET_CONV_2_2_EC_SIZE = 54;
-//parameter USER_SET_CONV_3_1_EC_SIZE = 16;
-//parameter USER_SET_CONV_3_2_EC_SIZE = 72;
-//parameter USER_SET_CONV_3_3_EC_SIZE = 70;
-//parameter USER_SET_FC_1_EC_SIZE = 19;
-//parameter USER_SET_FC_2_EC_SIZE = 4;
+parameter USER_SET_FC_2_SIZE = `FC2_size;
 
-parameter USER_SET_CONV_1_1_EC_SIZE = 1;
-parameter USER_SET_CONV_1_2_EC_SIZE = 7;
-parameter USER_SET_CONV_2_1_EC_SIZE = 6; 
-parameter USER_SET_CONV_2_2_EC_SIZE = 24;
-parameter USER_SET_CONV_3_1_EC_SIZE = 16;
-parameter USER_SET_CONV_3_2_EC_SIZE = 36;
-parameter USER_SET_CONV_3_3_EC_SIZE = 32;
-parameter USER_SET_FC_1_EC_SIZE = 4;
-parameter USER_SET_FC_2_EC_SIZE = 1;
+parameter USER_SET_CONV_1_1_EC_SIZE = `conv_1_1_ec_size;
+parameter USER_SET_CONV_1_2_EC_SIZE = `conv_1_2_ec_size;
+parameter USER_SET_CONV_2_1_EC_SIZE = `conv_2_1_ec_size;
+parameter USER_SET_CONV_2_2_EC_SIZE = `conv_2_2_ec_size;
+parameter USER_SET_CONV_3_1_EC_SIZE = `conv_3_1_ec_size;
+parameter USER_SET_CONV_3_2_EC_SIZE = `conv_3_2_ec_size;
+parameter USER_SET_CONV_3_3_EC_SIZE = `conv_3_3_ec_size;
+parameter USER_SET_FC_1_EC_SIZE = `fc1_ec_size;
+parameter USER_SET_FC_2_EC_SIZE = `fc2_ec_size;
 
 /***************************************** CONV_1_1 layer ***********************************************/  
     localparam CONV_1_1_OUTPUT_FRAME_WIDTH = CONV_1_1_INPUT_FRAME_WIDTH;

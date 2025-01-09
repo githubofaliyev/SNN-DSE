@@ -9,13 +9,12 @@ module tb;
   localparam CONV_1_1_INPUT_FRAME_SIZE = CONV_1_1_INPUT_FRAME_WIDTH*CONV_1_1_INPUT_FRAME_WIDTH;
   //localparam model_dir = "C:/Users/jlopezramos/Desktop/VivadoProjects/Models/INT4_S2_{2_56_48_27_30_28_10_8_10}";
   //localparam model_dir = "C:/Users/jlopezramos/Desktop/Vivado Projects/Models/FP32_S2_{1_56_48_27_30_28_10_4_5}";
-  localparam TIME_STEPS = 25;
   logic clk = 0;
   logic rst = 0;
   logic input_avail = 0;
 
   top_wrapper #(
-    .TIME_STEPS(TIME_STEPS), .CONV_1_1_INPUT_CHANNELS(CONV_1_1_INPUT_CHANNELS), 
+    .CONV_1_1_INPUT_CHANNELS(CONV_1_1_INPUT_CHANNELS), 
     .CONV_1_1_OUTPUT_CHANNELS(CONV_1_1_OUTPUT_CHANNELS), .CONV_1_1_KERNEL_SIZE(CONV_1_1_KERNEL_SIZE), 
     .CONV_1_1_INPUT_FRAME_WIDTH(CONV_1_1_INPUT_FRAME_WIDTH)) // .model_dir(model_dir))
   top_wrapper (
