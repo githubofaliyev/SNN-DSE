@@ -26,69 +26,67 @@ If you find this code useful in your work, please cite the following source:
   year={2024}
 }
 ```
-# Scripts
-## Requirements/Dependencies
-- `Python 3.11` (Newer versions were not compatible with some libraries used at the time of testing)
-- `PyTorch 2.2.2 with CUDA 12.1`
-- `snnTorch 0.7.0` (Newer versions may be incompatible with this repo)
-- `Brevitas 0.10.2`
+# Scripts Overview
 
-## Overview
-- `Training.py` Main training script
-- `Extract.py` Extracts weights and biases from pre-trained models for use in hardware simulation. It also extracts the a sample from the dataset and converts it to a txt file to use in hardware simulation.
-- `Net.py` Net class definition
-- `Configs.py` Defines hyperparameters used across all datasets
-- `Datasets.py` Defines classes for the datasets used. They include dataset specific parameters used for to conduct the experiments
-- `Functions.py` Defines functions used in `Training.py` and `Extract.py`
+## Requirements/Dependencies
+- **Python 3.11**: (Note: Newer Python versions may not be compatible with some libraries used at the time of testing)
+- **PyTorch 2.2.2 with CUDA 12.1**
+- **snnTorch 0.7.0**: (Newer versions may not be compatible with this repository)
+- **Brevitas 0.10.2**
+
+## Script Summary
+- **Training.py**: Main training script.
+- **Extract.py**: Extracts weights and biases from pre-trained models for hardware simulation. Also extracts a dataset sample and converts it into a text file for hardware simulation.
+- **Net.py**: Defines the model architecture through the `Net` class.
+- **Configs.py**: Contains hyperparameters shared across all datasets.
+- **Datasets.py**: Defines classes and dataset-specific parameters used during experimentation.
+- **Functions.py**: Contains utility functions used in both `Training.py` and `Extract.py`.
 
 ## Training
-Training is mostly automated and the default values are set to the values used to run the experiments. To train using CIFAR10, just run the script as is. The scripts will train 2 sets of one non-quantized model and one of an Int4 quantized model. 
-As it runs through the epochs it will save the weights and biases of the best epoch in an organized folder structure and delete the previous epoch. To change the dataset to be trained just change the dataset class near the top of `Training.py`.
+Training is mostly automated, with default values set to match those used during experiments. To train a model on CIFAR10, simply run the script as is. The process will train two models: one non-quantized and one with Int4 quantization. During training, the script saves the weights and biases of the best-performing epoch, organizing them into folders and removing previous epochs. To use a different dataset, modify the dataset class at the beginning of the `Training.py` script.
 
-## Weight+Bias Extraction
-In `Extract.py`
-1. Set the model path to the path of saved model weights
-2. Set the dataset to the same dataset the saved model was trained with
-3. Set the amount of Event Control Units(ECs) used in each layer. Must be a factor of the conv layer channel size. Factors of the layer sizes used in the paper are in the comments
+## Weight and Bias Extraction
+In **Extract.py**, follow these steps:
+1. Set the model path to point to the saved model weights.
+2. Set the dataset to match the one used to train the model.
+3. Specify the number of Event Control Units (ECs) used in each layer. EC size must be a factor of the convolution layer's channel size. Valid factors for the layer sizes used in the paper are provided in the comments.
+4. Run the script. The script will output a line starting with `` `define ``, followed by the path to a macros file. This line should be copied directly into the hardware's `top_wrapper`.
 
-> [!WARNING]
-> The EC size for conv_1_1 should always be set to 1 with direct coded models. The dense layer in the hybrid hardware is hardcoded to use one ECU.
-> For rate coded models, the EC size can be set to any factor of the layer size like the other layers.
-   
-   
-4. Run the script. It tests the accuracy as a sanity check. At the end it will print a line that start with "`define" and is followed by that path to a macros file. This line will be copied directly into the top_wrapper of the hardware.
+>[!WARNING]
+> For direct-coded models, the EC size for `conv_1_1` should always be set to 1. The dense layer in hybrid hardware is hardcoded to use a single ECU. For rate-coded models, EC size can be any factor of the layer size, similar to other layers.
 
-#### Macro File Overview
-The macro file defines the following parameters.
-- time_steps: Sets the value of the time_steps. *Used only with rate_encoded encoded models in corresponding sparse hardware code.*
-- model_directory: The directory of the folder that contains the extracted model.
-- ec_sizes: The ec sizes set in `Extract.py`.
-- w_sfactor: The weight scale factor used to convert the INT weights to FP32.
-- b_sfactor: The bias scale factor used to conver the INT biases to FP32.
-- w_zpt: The weight zero point used to convert the INT weights to FP32. This was always ended up being 0 in our models.
-- b_zpt: The bias zero point used to convert the INT biases to FP32. This was always ended up being 0 in our models.
+### Macro File Overview
+The macro file includes the following parameters:
+- **time_steps**: Defines the number of time steps (used only with rate-encoded models in the corresponding sparse hardware code).
+- **model_directory**: Specifies the directory containing the extracted model.
+- **ec_sizes**: The EC sizes set in `Extract.py`.
+- **w_sfactor**: The weight scale factor to convert INT weights to FP32.
+- **b_sfactor**: The bias scale factor to convert INT biases to FP32.
+- **w_zpt**: The weight zero point, used to convert INT weights to FP32 (usually 0 in our models).
+- **b_zpt**: The bias zero point, used to convert INT biases to FP32 (usually 0 in our models).
 
-# Hardware
-## Overview
-- `hybrid_sim` Used to run simulations on direct coded models(FP32 and INT4) for latency testing.
-- `hybrin_synth` Used for synthesis to determine energy usage on direct coded models(FP32 Only).
-- `hybrin_synth_int` Used for synthesis to determine energy usage of direct coded models(INT4 Only).
-- `sparse_sim` Used to run simulations on rate coded models(FP32 and INT4) for latency testing.
-- `sparse_synth_int` Use for synhtesis to determine energy usage of rate coded models(INT4 Only). _There is no FP32 equivalent as no FP32 rate coded model was tested._
+# Hardware Overview
 
-## Latency Testing
-1. Determine the right hardware code to use based on the model and the overview above.
-2. Copy the "\`define" line printed by `Extract.py`.
-3. Run behavorial simulation. The macros file sets the correct parameters.
-4. The simulation is done when the `fc_2_spk_RAM_loaded` signal goes high.
-5. Upon completetion the cycles and spikes will be written to a file named `cycles and spikes.txt`. The first group of numbers are the latency of each layer in cycles, followed by the total latency. The second group of numbers are the spikes generated by each layer should you want that info.
+## Simulations and Synthesis Tools
+- **hybrid_sim**: Simulates direct-coded models (FP32 and INT4) for latency testing.
+- **hybrin_synth**: Synthesis tool to calculate energy usage of direct-coded models (FP32 only).
+- **hybrin_synth_int**: Synthesis tool to calculate energy usage of direct-coded models (INT4 only).
+- **sparse_sim**: Simulates rate-coded models (FP32 and INT4) for latency testing.
+- **sparse_synth_int**: Synthesis tool to calculate energy usage of rate-coded models (INT4 only). *No FP32 equivalent, as no FP32 rate-coded models were tested.*
+
+## Latency Testing Workflow
+1. Select the appropriate hardware code based on the model and simulation type as described above.
+2. Copy the `` `define `` line generated by **Extract.py**.
+3. Run the behavioral simulation, which will use the macros file to set the correct parameters.
+4. The simulation ends when the `fc_2_spk_RAM_loaded` signal is triggered.
+5. Upon completion, the cycle and spike data will be written to a file named `cycles_and_spikes.txt`. The first set of values represents latency in cycles for each layer, followed by the total latency. The second set contains the spike count generated by each layer.
+
+>[!IMPORTANT]  
+> Ensure that `-d SIM` is added to the `xsim.compile.xvlog.more_options*` field in the simulation project settings within Vivado. Without this, the simulation will fail.
 
 ### Balancing Hardware Utilization
-Each layer demands different resources to process its inputs effectively. To minimize idle times and maximize efficiency, adjust EC sizes so that each layer has approximately equal latency.
+Each layer of the model requires different resources to process its inputs effectively. To maximize efficiency and minimize idle times, adjust EC sizes so that the latencies of each layer are roughly equal.
 
-Perfectly balancing latency may not be feasible due to restrictions requiring EC sizes to be factors of the convolution channel size. Monitor each layer's latency, adjust EC values in `Extract.py`, and rerun simulations until latencies are roughly equivalent.
+While perfectly balancing latency may not always be feasible due to EC size constraints (which must be factors of the convolution channel sizes), you can monitor each layer's latency and adjust EC sizes in **Extract.py** to improve the balance. After each adjustment, rerun the simulation and check the latency.
 
-Note that each layer has a base latency that cannot be reduced; loading spike trains into layers is a serial process unaffected by EC size. To determine this process's latency, observe signals named `CONV_X_X_input_spks`, where "X_X" corresponds to specific convolution layers; this indicates how many spikes are input into each layer. The duration between when this signal begins increasing and when it stops indicates process latency. Future iterations should be able to reduce this base latency.
-
-## License
-This code is released under the MIT license. See LICENSE.txt for more details.
+Be aware that some latency (like the base latency of loading spike trains into layers) is unavoidable, as these processes are serial. You can estimate this latency by examining signals like `CONV_X_X_input_spks` (where "X_X" corresponds to specific convolution layers) and `FCX_input_spks_sum`, which tracks the number of spikes input into each layer. The time from when this signal starts increasing to when it stops indicates the base latency. Future iterations may reduce this base latency.
