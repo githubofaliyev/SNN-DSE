@@ -1,4 +1,4 @@
-`include "C:/Users/jlopezramos/Desktop/PyCharmProjects/DATE 2025 Python/Extracted_Models/CIFAR100_S2_T1/CIFAR100_S2_T1 FP32_(58.41%)_EP462_{1_56_64_72_80_126_140_28_25}/macros.txt"
+`include "path to macros file"
 
 module top_wrapper #(
     parameter TIME_STEPS = 2,
