@@ -24,15 +24,20 @@ from Functions import *
 from Configs import config
 from Net import *
 
-model_name = "model_file_name"
-model_path = os.path.join("./model_folder/", model_name + ".pth")
+# name of the model .pth file. The extension is appended
+model_name = "model_file_name" + ".pth"
+#
+model_path = os.path.join("./model_folder/", model_name)
+
+name_without_date = model_name.split("__")[0]
 
 data_path = "./datasets/"
 dataset = CIFAR10(config, data_path)
 FC1_SIZE = 1064
 
 
-conv_1_1 = 1  # Possible values for the EC_Size. (Factors of the layers size)
+              # Possible values for the EC_Size. (Factors of the layers size)
+conv_1_1 = 1  # 2, 4, 8, 16, 32, 64 (This should always be set to 1 for direct encoded models due to hardcoded hardware design. For rate encoded models it can be set to any of the listed numbers like the other layers.
 conv_1_2 = 1  # 2, 4, 7, 8, 14, 16, 28, 56, 112
 conv_2_1 = 1  # 2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64, 96, 192
 conv_2_2 = 1  # 2, 3, 4, 6, 8, 9, 12, 18, 24, 27, 36, 54, 72, 108, 216
@@ -41,6 +46,14 @@ conv_3_2 = 1  # 2, 3, 4, 6, 7, 8, 9, 12, 14, 18, 21, 24, 28, 36, 42, 56, 63, 72,
 conv_3_3 = 1  # 2, 4, 5, 7, 8, 10, 14, 16, 20, 28, 35, 40, 56, 70, 80, 112, 140, 280, 560
 fc_1 = 1  # 2, 4, 7, 8, 14, 19, 28, 38, 56, 76, 133, 152, 266, 532, 1064
 fc_2 = 1  # 2, 4, 5, 8, 10, 20, 25, 40, 50, 100, 125, 200, 250, 500, 1000
+
+model_dataset = name_without_date.split("_")[0]
+
+if model_dataset != dataset.name:
+    print("Model dataset doesn't match class dataset")
+    print(f"Model dataset: {model_dataset}")
+    print(f"Class dataset: {dataset.name}")
+    exit(-2)
 
 if "INT4" in model_path:
     data_type = "INT4"
@@ -61,30 +74,27 @@ print(data_type)
 ######################## model dir ########################
 # Extract the dataset string from the model name and loads the matching class
 dataset_str = model_name.split(" ", 1)[0]
-dir_name = './Extracted_Models/{}_{{{}_{}_{}_{}_{}_{}_{}_{}_{}}}'.format(
-    dataset_str, conv_1_1, conv_1_2,
+dir_name = './Extracted_Models/{}/{}_{{{}_{}_{}_{}_{}_{}_{}_{}_{}}}'.format(
+    dataset_str, name_without_date, conv_1_1, conv_1_2,
     conv_2_1, conv_2_2,
     conv_3_1, conv_3_2, conv_3_3,
     fc_1, fc_2)
-
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 device_cpu = torch.device("cpu")
 
 net = Net(config, dataset, weight_quant, bias_quant).to(device)
 
-print(model_path)
+print(os.path.abspath(model_path))
 if (os.path.exists(model_path)):
     net.load_state_dict(torch.load(model_path, map_location=device))
-    print("Model loaded successfully")
+    print("Model loaded successfully\n")
 else:
     print("Model not found")
     exit(-5)
 
-
 current_accuracy = test(config, net, dataset, device)
-print(f"Curent acc: {current_accuracy}% \n")
-
+print(f"Curent acc: {current_accuracy:0.2f}% \n")
 
 if os.path.exists(dir_name):
     shutil.rmtree(dir_name)
@@ -100,18 +110,41 @@ os.makedirs(full_path_sc, exist_ok=True)
 sample_loader = dataset.GetSampleLoader()
 d_it, _ = next(iter(sample_loader))
 sample = d_it[0]
-flat_image = sample.cpu().numpy().flatten().tolist()
 
-img_file_name = "image.txt"
-full_path = os.path.join(dir_name, img_file_name)
-with open(full_path, 'w') as file:
-    for value in flat_image:
-        file.write(str(value))
-        file.write("\n")
-if "Rate" in model_path:
-    sparse_core_weights_and_biases(net.Qconv1_1, full_path_sc, '1_1', conv_1_1, is_quantized)
-else:
+if not dataset.is_rate_encoded:
+    # Direct encoded sample written to txt file
+    flat_image = sample.cpu().numpy().flatten().tolist()
+    img_file_name = "image.txt"
+    full_path = os.path.join(dir_name, img_file_name)
+    with open(full_path, 'w') as file:
+        for value in flat_image:
+            file.write(str(value))
+            file.write("\n")
+
     dense_core_weights_and_biases(net.Qconv1_1, full_path_dc, "1_1", conv_1_1, is_quantized)
+else:
+    # Rate encoded sample written to txt file
+    full_path = os.path.join(dir_name, 'spk_in.txt')
+    spk_in_data = open(full_path, "w")
+
+    smpl = spikegen.rate(sample.unsqueeze(0), num_steps=dataset.num_steps)
+    fltnd = smpl.reshape((dataset.num_steps * 3, int(32 * 32)))
+    # Iterate through the first 5 rows of fltnd
+    for i, lin in enumerate(fltnd[:15]):
+        # Convert the tensor to a numpy array if it isn't already
+        lin_np = lin.cpu().numpy()
+        count_ones = np.sum(lin_np == 1)
+        print(f"Number of 1s in row {i + 1}: {count_ones}")
+
+    for lin in fltnd:
+        result_row = parse_lin(lin.cpu().numpy())
+        spk_in_data.write(result_row + '\n')
+
+    sparse_core_weights_and_biases(net.Qconv1_1, full_path_sc, '1_1', conv_1_1, is_quantized)
+# if "Rate" in model_path:
+#     sparse_core_weights_and_biases(net.Qconv1_1, full_path_sc, '1_1', conv_1_1, is_quantized)
+# else:
+#     dense_core_weights_and_biases(net.Qconv1_1, full_path_dc, "1_1", conv_1_1, is_quantized)
 
 sparse_core_weights_and_biases(net.Qconv1_2, full_path_sc, '1_2', conv_1_2, is_quantized)
 sparse_core_weights_and_biases(net.Qconv2_1, full_path_sc, "2_1", conv_2_1, is_quantized)
@@ -122,7 +155,6 @@ sparse_core_weights_and_biases(net.Qconv3_3, full_path_sc, '3_3', conv_3_3, is_q
 
 create_macro_file(net, dir_name, is_quantized, dataset, conv_1_1, conv_1_2, conv_2_1, conv_2_2, conv_3_1,
                   conv_3_2, conv_3_3, fc_1, fc_2)
-
 
 NEURAL_SIZE_1 = int(FC1_SIZE / fc_1)
 if is_quantized:
@@ -149,7 +181,6 @@ for i in range(0, len(FC1_layer_weights), NEURAL_SIZE_1):
 
             # Write the bias
             file.write(f'\n{bias_sfactor}\n')
-
 
 NEURAL_SIZE_2 = int(dataset.pop_size / fc_2)
 for i in range(0, len(FC2_layer_weights), NEURAL_SIZE_2):

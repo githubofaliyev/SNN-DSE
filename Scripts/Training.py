@@ -37,18 +37,18 @@ for trial in range(1, 3):
         start_date_time_obj = datetime.now()
         start_date_time_str = datetime.now().strftime("%m_%d_%Y-%I_%M_%S_%p")
 
-        experiment_name = f'{dataset.name} S{dataset.num_steps} T{trial} '
+        experiment_name = f'{dataset.name}_S{dataset.num_steps}_T{trial}_'
         if (is_quantized):
             experiment_name += f'INT{config["num_bits"]}'
         else:
             experiment_name += f'FP32'
 
-        models_path = f'./{dataset.name} S{dataset.num_steps} {start_date_time_str}/'
+        models_path = f'./Saved_Models/{dataset.name}/{dataset.name}_S{dataset.num_steps}_{start_date_time_str}/'
         os.makedirs(models_path, exist_ok=True)
-        log = open(f'{models_path}/{experiment_name} Log {start_date_time_str}.log', 'w')
+        log = open(f'{models_path}/{experiment_name}_Log_{start_date_time_str}.log', 'w')
         log.write("Config\n")
         log.write(
-            f'num_epochs:{dataset.num_steps}, batch_size:{dataset.batch_size}, num_steps:{dataset.num_steps}, '
+            f'num_epochs:{dataset.num_epochs}, batch_size:{dataset.batch_size}, num_steps:{dataset.num_steps}, '
             f'pop_size:{dataset.pop_size}\n\n')
 
         print(f"=======Training Net=======\n======={experiment_name}======\n")
@@ -71,7 +71,7 @@ for trial in range(1, 3):
 
                 # Save the new model
                 curr_date_time = datetime.now().strftime("%m_%d_%Y-%I_%M_%S_%p")
-                model_dir = f"{models_path}/{experiment_name} ({curr_accuracy:0.2f}%) EP{epoch} {curr_date_time}.pth"
+                model_dir = f"{models_path}/{experiment_name}_({curr_accuracy:0.2f}%)_EP{epoch}__{curr_date_time}.pth"
                 torch.save(net.state_dict(), model_dir)
                 current_model_path = model_dir
 
@@ -85,5 +85,5 @@ for trial in range(1, 3):
             log.write(f"Epoch: {epoch} \tCurrent acc: {curr_accuracy:.2f}%, Best acc: {best_accuracy:.2f}%,      "
                       f"Elapsed Time: {datetime.now() - start_date_time_obj}\n")
 
-        log.write(f"Stopping after {config['num_epochs']} Epochs\n")
+        log.write(f"Stopping after {dataset.num_epochs} Epochs\n")
         log.close()

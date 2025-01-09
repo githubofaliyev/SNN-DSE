@@ -18,6 +18,7 @@ class Net(nn.Module):
         self.p1 = config["dropout"]
         self.spike_grad = surrogate.fast_sigmoid(self.slope)
         self.pop_size = dataset.pop_size
+        self.is_rate_encoded = dataset.is_rate_encoded
 
         # Initialize Layers
         # VGG9 layer 1
@@ -68,7 +69,7 @@ class Net(nn.Module):
         self.lif9 = snn.Leaky(self.beta, threshold=self.thr, spike_grad=self.spike_grad)
         self.dropout = nn.Dropout(self.p1)
 
-    def forward(self, x, is_rate_encoded=False):
+    def forward(self, x):
         # Initialize hidden states and outputs at t=0
         mem1 = self.lif1.init_leaky()
         mem2 = self.lif2.init_leaky()
@@ -84,7 +85,7 @@ class Net(nn.Module):
         spk9_rec = []
         mem9_rec = []
 
-        if is_rate_encoded is False:
+        if self.is_rate_encoded is False:
             # expand tensor, duplicating data across a single dimension for direct encoding
             sample = x.expand(self.num_steps, -1, -1, -1, -1)
         else:

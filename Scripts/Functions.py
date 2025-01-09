@@ -24,7 +24,7 @@ def train(config, net, dataset, device="cpu"):
     lr_accum = []
     for data, labels in trainloader:
         data, labels = data.to(device), labels.to(device)
-        spk_rec, _ = net(data, dataset.is_rate_encoded)
+        spk_rec, _ = net(data)
         loss = criterion(spk_rec, labels)
         optimizer.zero_grad()
         loss.backward()
@@ -128,16 +128,18 @@ def sparse_core_weights_and_biases(conv_layer, dir_name, l, n, is_quantized):
 def create_macro_file(net, dir_name, is_quantized, dataset, conv_1_1_ec_size, conv_1_2_ec_size, conv_2_1_ec_size,
                       conv_2_2_ec_size,
                       conv_3_1_ec_size, conv_3_2_ec_size, conv_3_3_ec_size, fc1_ec_size, fc2_ec_size):
-    macro_path = os.path.abspath(f"{dir_name}/macros.txt")
-    macro_path = macro_path.replace('\\', '/')
+    dir_name_abs = os.path.abspath(dir_name)
+    dir_name_abs = dir_name_abs.replace("\\", "/")
+
+    macro_path = f"{dir_name_abs}/macros.txt"
 
     with open(macro_path, 'w') as file:
-        file.write(f'`define model_directory "{dir_name}"\n\n')
+        file.write(f'`define model_directory "{dir_name_abs}"\n\n')
 
         if dataset.is_rate_encoded:
-            file.write(f'`define time_steps {dataset.time_steps}\n')
+            file.write(f'`define time_steps {dataset.num_steps}\n')
 
-        file.write(f'`define FC2_size {dataset.pop_size}\n')
+        file.write(f'`define FC2_size {dataset.pop_size}\n\n')
 
         file.write(f"`define conv_1_1_ec_size {conv_1_1_ec_size}\n")
         file.write(f"`define conv_1_2_ec_size {conv_1_2_ec_size}\n")
@@ -265,3 +267,9 @@ def create_macro_file(net, dir_name, is_quantized, dataset, conv_1_1_ec_size, co
                        "`define b_zpt_fc2 0.0")
 
         print(f'`include "{macro_path}"\n')
+
+
+# Used for writing spikes from a rate encoded sample to a txt file
+def parse_lin(lin):
+    result_row = ''.join(map(str, map(int, lin)))
+    return result_row
