@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it."
+title: "SNN-DSE"
+type: software
+authors:
+  - family-names: "Aliyev"
+    given-names: "Ilkin"
+repository-code: "https://github.com/githubofaliyev/SNN-DSE"
+license: MIT
+preferred-citation:
+  type: article
+  title: "Exploring the Sparsity-Quantization Interplay on a Novel Hybrid SNN Event-Driven Architecture"
+  authors:
+    - family-names: "Aliyev"
+      given-names: "Ilkin"
+    - family-names: "Lopez"
+      given-names: "Jesus"
+    - family-names: "Adegbija"
+      given-names: "Tosiron"
+  year: 2024
+  url: "https://arxiv.org/abs/2411.15409"
