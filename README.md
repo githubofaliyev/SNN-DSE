@@ -4,12 +4,50 @@
 
 This repository contains the implementation and reproducibility artifacts for our ISPASS 2026 paper. We present a systematic workload characterization study quantifying the sensitivity of hardware inference latency to SNN training-time hyperparameters — specifically surrogate gradient functions and neuron models — across event-based vision datasets.
 
+> **Note:** If you use this work, please [cite our paper](#citation).
+
 ## Key Contributions
 
 - **Surrogate gradient characterization**: Evaluation of Fast Sigmoid, Arctangent, Spike Rate Estimator, and Stochastic Spike Operator — quantifying trade-offs between accuracy and hardware activation sparsity.
 - **Neuron model analysis**: LIF vs. Lapicque neuron models, demonstrating up to 28% latency reduction through improved sparsity dynamics.
 - **Workload-specific profiling**: Analysis across DVS128-Gesture, N-MNIST, and DVS-CIFAR10.
 - **Hardware-in-the-loop validation**: Cycle-accurate FPGA instrumentation platform for latency and spike count measurement.
+
+## LIF vs. Lapicque Neuron Dataflow
+
+<p align="center">
+  <img src="docs/figures/Fig1.png" alt="LIF vs Lapicque neuron dataflow" width="85%"/>
+</p>
+
+LIF relies on lightweight bit-shifts for decay (low arithmetic intensity), while Lapicque requires explicit multiplication to model RC constants. Despite higher per-operation cost, Lapicque's superior temporal dynamics suppress total spike events, leading to a net reduction in system-level latency.
+
+## Methodology
+
+<p align="center">
+  <img src="docs/figures/Fig3.png" alt="Design space exploration workflow" width="55%"/>
+</p>
+
+Our two-phase DSE strategy first sweeps surrogate gradient functions and slope parameters for accuracy, then explores neuron model configurations (LIF/Lapicque) with varying decay and threshold settings. Top candidates are profiled on the FPGA instrumentation platform for cycle-accurate latency measurement.
+
+## Key Results
+
+### Accuracy Sensitivity to Surrogate Gradients
+
+<p align="center">
+  <img src="docs/figures/Fig5.png" alt="Accuracy trends across surrogate functions" width="95%"/>
+</p>
+
+Fast Sigmoid maintains peak accuracy across the widest range of slopes. SRE and ATAN exhibit cliff-like degradation — their exponential tails aggressively suppress spiking activity, risking vanishing gradients if the slope is not carefully bounded.
+
+### Pareto Analysis: Neuron Model vs. Latency
+
+<p align="center">
+  <img src="docs/figures/Fig7.png" alt="Pareto analysis of neuron configurations" width="95%"/>
+</p>
+
+Lapicque (yellow) consistently clusters in the high-accuracy, low-latency quadrant across all three datasets. On N-MNIST, Lapicque provides a 28% latency reduction at comparable accuracy. The increased arithmetic cost of the RC-circuit model is fully amortized by the reduction in total spike events.
+
+---
 
 ## Repository Structure
 
@@ -22,6 +60,7 @@ Hardware/
   hybrid_synth_int/DATE25 hybrid synthesis hardware (INT4)
   sparse_sim/      DATE25 sparse simulation hardware
   sparse_synth_int/DATE25 sparse synthesis hardware (INT4)
+docs/figures/      Paper figures
 ```
 
 ## Requirements
