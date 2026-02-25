@@ -12,7 +12,7 @@ from brevitas.quant.scaled_int import Int8BiasPerTensorFloatInternalScaling as I
 from brevitas.quant.scaled_int import Int8WeightPerTensorFloat as Int8Weight
 
 data_path = "./datasets/"
-dataset = CIFAR10(config, data_path)
+dataset = DVSGesture(config, data_path)
 
 for trial in range(1, 3):
     for is_quantized in (False, True):
@@ -49,7 +49,8 @@ for trial in range(1, 3):
         log.write("Config\n")
         log.write(
             f'num_epochs:{dataset.num_epochs}, batch_size:{dataset.batch_size}, num_steps:{dataset.num_steps}, '
-            f'pop_size:{dataset.pop_size}\n\n')
+            f'pop_size:{dataset.pop_size}, surrogate:{config.get("surrogate_type","fast_sigmoid")}, '
+            f'neuron:{config.get("neuron_type","lif")}, beta:{config["beta"]}, threshold:{config["threshold"]}\n\n')
 
         print(f"=======Training Net=======\n======={experiment_name}======\n")
         log.write(f"=======Training Net=======\n======={experiment_name}======\n")

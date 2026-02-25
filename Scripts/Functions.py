@@ -127,7 +127,8 @@ def sparse_core_weights_and_biases(conv_layer, dir_name, l, n, is_quantized):
 
 def create_macro_file(net, dir_name, is_quantized, dataset, conv_1_1_ec_size, conv_1_2_ec_size, conv_2_1_ec_size,
                       conv_2_2_ec_size,
-                      conv_3_1_ec_size, conv_3_2_ec_size, conv_3_3_ec_size, fc1_ec_size, fc2_ec_size):
+                      conv_3_1_ec_size, conv_3_2_ec_size, conv_3_3_ec_size, fc1_ec_size, fc2_ec_size,
+                      config=None):
     dir_name_abs = os.path.abspath(dir_name)
     dir_name_abs = dir_name_abs.replace("\\", "/")
 
@@ -136,10 +137,22 @@ def create_macro_file(net, dir_name, is_quantized, dataset, conv_1_1_ec_size, co
     with open(macro_path, 'w') as file:
         file.write(f'`define model_directory "{dir_name_abs}"\n\n')
 
-        if dataset.is_rate_encoded:
-            file.write(f'`define time_steps {dataset.num_steps}\n')
-
+        file.write(f'`define time_steps {dataset.num_steps}\n')
         file.write(f'`define FC2_size {dataset.pop_size}\n\n')
+
+        input_frame_width = getattr(dataset, "input_size", 32)
+        file.write(f'`define conv_1_1_input_frame_width {input_frame_width}\n\n')
+
+        neuron_type_val = 0
+        beta_val = 0.15
+        threshold_val = 0.5
+        if config is not None:
+            neuron_type_val = 1 if config.get("neuron_type", "lif") == "lapicque" else 0
+            beta_val = config.get("beta", 0.15)
+            threshold_val = config.get("threshold", 0.5)
+        file.write(f'`define neuron_type {neuron_type_val}\n')
+        file.write(f'`define beta {beta_val}\n')
+        file.write(f'`define threshold {threshold_val}\n\n')
 
         file.write(f"`define conv_1_1_ec_size {conv_1_1_ec_size}\n")
         file.write(f"`define conv_1_2_ec_size {conv_1_2_ec_size}\n")

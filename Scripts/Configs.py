@@ -14,7 +14,13 @@ config = {
             "beta": 0.15,  # Decay rate parameter (beta)
             "threshold": 0.5,  # Threshold parameter (theta)
             "lr": 5.0e-3,  # Initial learning rate
-            "slope": 1.0,  # Slope value (k)
+            "slope": 1.0,  # Slope value (alpha / k)
+
+            # Surrogate gradient: "fast_sigmoid", "atan", "spike_rate_escape", "SSO"
+            "surrogate_type": "fast_sigmoid",
+
+            # Neuron model: "lif" or "lapicque"
+            "neuron_type": "lif",
 
             # Fixed params
             "correct_rate": 1.0,  # Correct rate
