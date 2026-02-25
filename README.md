@@ -14,16 +14,15 @@ This repository contains the implementation of a novel hybrid inference architec
   </tr>
 </table>
 
-Corresponding paper is available on Arxiv [![arXiv](https://img.shields.io/badge/https://arxiv.org/pdf/2411.15409.svg)](https://arxiv.org/pdf/2411.15409). 
 If you find this code useful in your work, please cite the following source:
 
-
 ```bibtex
-@article{aliyev2024exploring,
+@inproceedings{aliyev2024exploring,
   title={Exploring the Sparsity-Quantization Interplay on a Novel Hybrid SNN Event-Driven Architecture},
   author={Aliyev, Ilkin and Lopez, Jesus and Adegbija, Tosiron},
-  journal={arXiv preprint arXiv:2411.15409},
-  year={2024}
+  booktitle={Design, Automation \& Test in Europe Conference \& Exhibition (DATE)},
+  year={2025},
+  organization={IEEE}
 }
 ```
 # Scripts Overview
