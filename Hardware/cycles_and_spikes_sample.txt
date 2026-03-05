@@ -1,0 +1,24 @@
+// The latency is in cycles
+Latency per layer:
+64846
+423543
+140248
+123635
+121550
+114702
+111198
+64610
+1293
+
+Total latency: 1165625
+
+
+Spikes per layer:
+10431
+2338
+2112
+813
+831
+535
+471
+7
